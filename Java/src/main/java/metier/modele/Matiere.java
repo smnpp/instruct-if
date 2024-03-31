@@ -1,21 +1,44 @@
 package metier.modele;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Matiere implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class Matiere {
     @Id
-    private String libelle;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
+    private String nom;
+    
+    public Long getId() {
+        return id;
+    }
+    
+    public String getNom() {
+        return nom;
+    }
 
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+    
+    public Matiere(){
+        
+    }
+
+    public Matiere(String nom) {
+        this.nom = nom;
+    }
+
+    @Override
+    public String toString() {
+        return "Matiere{" + "id=" + id + ", nom=" + nom + '}';
+    }
+    /*
     // On garde la collection des matières valides, mais cela ne sera pas stocké en base
     // Il s'agit juste d'une aide au niveau du modèle pour vérifier les valeurs valides
     private static final Set<String> MATIERES_VALIDES;
@@ -60,7 +83,5 @@ public class Matiere implements Serializable {
         }
         return matieres;
     }
-
-    // Méthodes toString, equals, et hashCode si nécessaire
-
+    */
 }

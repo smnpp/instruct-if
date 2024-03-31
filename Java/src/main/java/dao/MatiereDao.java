@@ -20,10 +20,10 @@ public class MatiereDao {
     }
 
     //On pourra ajouter ici d'autres méthodes pour gérer les matieres (find, update, delete...)
-    public static Matiere trouverParLibelle(String libelle) {
+    public static Matiere trouverParNom(String nom) {
         EntityManager em = JpaUtil.obtenirContextePersistance();
-        TypedQuery<Matiere> query = em.createQuery("SELECT c FROM Matiere c WHERE c.libelle = :libelle", Matiere.class);
-        query.setParameter("libelle", libelle);
+        TypedQuery<Matiere> query = em.createQuery("SELECT c FROM Matiere c WHERE c.nom = :nom", Matiere.class);
+        query.setParameter("nom", nom);
         List<Matiere> matieres = query.getResultList();
         Matiere result = null;
         if (!matieres.isEmpty()) {

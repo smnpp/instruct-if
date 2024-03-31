@@ -5,8 +5,8 @@ import java.util.List;
 public class AutreIntervenant extends Intervenant{
     private String activite;
 
-    public AutreIntervenant(String nom, String prenom, String telephone, List<Integer> niveau, Boolean disponibilite, String activite){
-        super(nom, prenom, telephone, niveau, disponibilite);
+    public AutreIntervenant(String nom, String prenom, String telephone, String mdp, List<Integer> niveau, String activite){
+        super(nom, prenom, telephone, mdp, niveau);
         this.activite = activite;
     }
 

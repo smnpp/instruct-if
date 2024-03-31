@@ -8,8 +8,8 @@ public class Enseignant extends Intervenant {
         // Default constructor
     }
     
-    public Enseignant(String nom, String prenom, String telephone, List<Integer> niveau, Boolean disponibilite, String typeEtablissement) {
-        super(nom, prenom, telephone, niveau, disponibilite);
+    public Enseignant(String nom, String prenom, String telephone, String mdp, List<Integer> niveau, String typeEtablissement) {
+        super(nom, prenom, telephone, mdp, niveau);
         this.typeEtablissement = typeEtablissement;
     }
     

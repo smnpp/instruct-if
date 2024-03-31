@@ -1,6 +1,5 @@
 package metier.modele;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,8 +12,7 @@ import java.util.Date;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Soutien implements Serializable {
-
+public class Soutien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,12 +22,15 @@ public class Soutien implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
     private Long duree; // en minutes
-    private Integer evalEleve;
+    private Integer evaluationEleve;
     private String bilanIntervenant;
     @ManyToOne
     private Matiere matiere ;
     @ManyToOne
     private Eleve eleve ;
+    @ManyToOne
+    private Intervenant intervenant;
+    
 
     public Soutien() {
         // Par défaut, un soutien est en attente et a pour date la date actuelle
@@ -85,12 +86,12 @@ public class Soutien implements Serializable {
         this.duree = duree;
     }
 
-    public Integer getEvalEleve() {
-        return evalEleve;
+    public Integer getEvaluationEleve() {
+        return evaluationEleve;
     }
 
-    public void setEvalEleve(Integer evalEleve) {
-        this.evalEleve = evalEleve;
+    public void setEvaluationEleve(Integer evaluationEleve) {
+        this.evaluationEleve = evaluationEleve;
     }
 
     public String getBilanIntervenant() {
@@ -118,6 +119,16 @@ public class Soutien implements Serializable {
         this.matiere = matiere;
     }
 
+    public Intervenant getIntervenant() {
+        return intervenant;
+    }
+
+    public void setIntervenant(Intervenant intervenant) {
+        this.intervenant = intervenant;
+    }
+    
+    
+
     // Méthode toString pour l'affichage
     @Override
     public String toString() {
@@ -127,8 +138,8 @@ public class Soutien implements Serializable {
                 ", descriptif='" + descriptif + '\'' +
                 ", date=" + date +
                 ", duree=" + duree +
-                ", evalEleve=" + evalEleve +
-                ", bilanIntervenant='" + bilanIntervenant + '\'' +
+                ", evaluation eleve=" + evaluationEleve +
+                ", bilan intervenant='" + bilanIntervenant + '\'' +
                 '}';
     }
 }

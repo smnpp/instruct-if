@@ -10,8 +10,8 @@ public class Etudiant extends Intervenant {
         
     }
 
-    public Etudiant(String nom, String prenom, String telephone, List<Integer> niveau, Boolean disponibilite, String universite, String specialite) {
-        super(nom, prenom, telephone, niveau, disponibilite);
+    public Etudiant(String nom, String prenom, String telephone, String mdp, List<Integer> niveau, String universite, String specialite) {
+        super(nom, prenom, telephone, mdp, niveau);
         this.universite = universite;
         this.specialite = specialite;
     }
