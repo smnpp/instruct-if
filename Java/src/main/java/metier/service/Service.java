@@ -3,7 +3,6 @@
  */
 package metier.service;
 
-import com.google.maps.model.LatLng; //classe LatLng pour les coordonnées
 import dao.EleveDao;
 import dao.EtablissementDao;
 import dao.JpaUtil;
@@ -12,14 +11,10 @@ import dao.SoutienDao;
 import metier.modele.Eleve;
 import metier.modele.Etablissement;
 import metier.modele.Matiere;
-import util.GeoNetApi;
 import util.Message;
 import util.EducNetApi;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Comparator;
-import java.util.Set;
 import metier.modele.Soutien;
 
 /**
@@ -39,47 +34,48 @@ public class Service {
             JpaUtil.creerContextePersistance();
 
             EducNetApi api = new EducNetApi();
-            List<String> result;
-            List<String> result1;
-            List<String> result2;
-            result = null ;
-            result1 = api.getInformationCollege(uai);
-            result2 = api.getInformationLycee(uai);
-            if (result1 != null){
-            result = result1 ; 
-            }
-            else if (result2 != null) {
-            result = result2 ;
-            }
-            Etablissement etablissement = new Etablissement();
-            JpaUtil.ouvrirTransaction();
-            if (result != null) {
-                if (EtablissementDao.trouverParId(uai) == null) //Vérifie que l'établissement n'existe pas dans la base
-                {
-                        etablissement.setUai(result.get(0));
-                        etablissement.setNomEtablissement(result.get(1));
-                        etablissement.setSecteur(result.get(2));
-                        etablissement.setCodeCommune(result.get(3));
-                        etablissement.setNomCommune(result.get(4));
-                        etablissement.setCodeDepartement(result.get(5));
-                        etablissement.setDepartement(result.get(6));
-                        etablissement.setAcademie(result.get(7));
-                        etablissement.setIps(result.get(8));
+            if (api.getInformationCollege(uai) != null || api.getInformationLycee(uai) != null) {
 
-                        etablissementDao.create(etablissement);
+                List<String> resultEtablissement;
+                Etablissement etablissementEleve = new Etablissement();
+                Etablissement etablissementTrouve = EtablissementDao.trouverParId(uai);
+                if (etablissementTrouve == null) {
+                    
+                    if (eleve.getClasse() > 2) {
+                        resultEtablissement = api.getInformationCollege(uai);
+                    } else {
+                        resultEtablissement = api.getInformationLycee(uai);
+                    }
 
+                    if (resultEtablissement != null) {
+                        etablissementEleve.setUai(resultEtablissement.get(0));
+                        etablissementEleve.setNomEtablissement(resultEtablissement.get(1));
+                        etablissementEleve.setSecteur(resultEtablissement.get(2));
+                        etablissementEleve.setCodeCommune(resultEtablissement.get(3));
+                        etablissementEleve.setNomCommune(resultEtablissement.get(4));
+                        etablissementEleve.setCodeDepartement(resultEtablissement.get(5));
+                        etablissementEleve.setDepartement(resultEtablissement.get(6));
+                        etablissementEleve.setAcademie(resultEtablissement.get(7));
+                        etablissementEleve.setIps(resultEtablissement.get(8));
+                    }
+                }
+
+                else {
+                    etablissementEleve = etablissementTrouve;
                 }
                 
-                else {
-                    etablissement = EtablissementDao.trouverParId(uai);
+                JpaUtil.ouvrirTransaction();
+                if (etablissementTrouve == null) {
+                    etablissementDao.create(etablissementEleve);
                 }
-                eleve.setEtablissement(etablissement);
+                eleve.setEtablissement(etablissementEleve);
                 eleveDao.create(eleve); // Persister l'entité eleve
                 JpaUtil.validerTransaction();
+
                 success = true;
 
                 // Envoi du mail de confirmation
-                Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Bienvenue sur le réseau Instruct'IF", "Bonjour "
+                Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Bienvenue sur le réseau INSTRUCT'IF", "Bonjour "
                         + eleve.getPrenom() + ", Nous te confirmons ton inscription sur le réseau INSTRUCT'IF. Si tu as besoin d'un soutien pour tes"
                         + " leçons, ou tes devoirs, rends-toi sur notre site pour une mise en relation avec un intervenant.");
             }
@@ -88,7 +84,7 @@ public class Service {
                 JpaUtil.annulerTransaction();
 
                 // Envoi du mail d'infirmité
-                Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Échec de l'inscription sur le réseau Instruct'IF",
+                Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Échec de l'inscription sur le réseau INSTRUCT'IF",
                         "Bonjour "
                         + eleve.getPrenom() + " ton inscription sur le réseau INSTRUCT'IF a malencontreusement échoué... Merci de recommencer "
                         + "ultérieurement.");
@@ -97,10 +93,10 @@ public class Service {
         }
         catch (Exception e) {
             e.printStackTrace();
-        JpaUtil.annulerTransaction();
+            JpaUtil.annulerTransaction();
 
-        // Envoi du mail d'infirmité
-        Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Échec de l'inscription sur le réseau Instruct'IF",
+            // Envoi du mail d'infirmité
+            Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Échec de l'inscription sur le réseau INSTRUCT'IF",
                 "Bonjour "
                 + eleve.getPrenom() + " ton inscription sur le réseau INSTRUCT'IF a malencontreusement échoué... Merci de recommencer ultérieurement.");
         }

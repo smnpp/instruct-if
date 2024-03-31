@@ -19,7 +19,7 @@ import java.util.List;
  */
 import metier.modele.Eleve;
 import metier.modele.Matiere;
-import metier.modele.Soutien;
+
 
 public class Main {
 
