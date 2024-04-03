@@ -17,17 +17,15 @@ public class EtablissementDao {
     }
     
     public static Etablissement trouverParId(String uai) {
-        EntityManager em = JpaUtil.obtenirContextePersistance();
-        TypedQuery<Etablissement> query = em.createQuery("SELECT c FROM Etablissement c WHERE c.uai = :uai", Etablissement.class);
-        query.setParameter("uai", uai);
-        List<Etablissement> etablissements = query.getResultList();
-        Etablissement result = null;
-        if (!etablissements.isEmpty()) {
-            // on prend le tuple de la première ligne et cela marche car l'uai est unique
-            result = etablissements.get(0);
-        }
-        return result;
+        return JpaUtil.obtenirContextePersistance().find(Etablissement.class, uai);
     }
+    
+    public void delete(Etablissement etablissement){
+        JpaUtil.obtenirContextePersistance().remove(etablissement);
+    }
+    public Etablissement update(Etablissement etablissement){
+        return JpaUtil.obtenirContextePersistance().merge(etablissement);
+    }       
     
     public List<Etablissement> getAllEtablissements() {
         EntityManager em = JpaUtil.obtenirContextePersistance();

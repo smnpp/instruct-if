@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Column;
+import javax.persistence.ManyToOne;
 import java.util.Date;
 
 
@@ -30,6 +31,7 @@ public class Eleve implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date dateNaissance;
     private Integer classe;
+    @ManyToOne
     private Etablissement etablissement;
     //private String uai;
     

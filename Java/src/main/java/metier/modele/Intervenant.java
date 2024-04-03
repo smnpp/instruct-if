@@ -1,6 +1,8 @@
 package metier.modele;
 
 import javax.persistence.Column;
+import javax.persistence.InheritanceType;
+import javax.persistence.Inheritance;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,6 +11,7 @@ import javax.persistence.Id;
 import java.util.List;
 
 @Entity
+@Inheritance (strategy = InheritanceType.JOINED)
 public class Intervenant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,7 +93,7 @@ public class Intervenant {
 
     public void setNbIntervention(Integer nbIntervention) {
         this.nbIntervention = nbIntervention;
-    }
+    }  
     
 
     @Override

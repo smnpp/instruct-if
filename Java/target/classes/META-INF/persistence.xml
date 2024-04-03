@@ -7,6 +7,9 @@
     <class>metier.modele.Soutien</class>
     <class>metier.modele.Matiere</class>
     <class>metier.modele.Intervenant</class>
+    <class>metier.modele.Etudiant</class>
+    <class>metier.modele.AutreIntervenant</class>
+    <class>metier.modele.Enseignant</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/DASI-TD"/>
       <property name="javax.persistence.jdbc.user" value="dasi"/>

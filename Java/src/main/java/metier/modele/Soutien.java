@@ -20,9 +20,9 @@ public class Soutien {
     private EtatSoutien etat;
     private String descriptif;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private Date date; // date de lancement de la visio
     private Long duree; // en minutes
-    private Integer evaluationEleve;
+    private Integer autoevaluationEleve;
     private String bilanIntervenant;
     @ManyToOne
     private Matiere matiere ;
@@ -35,7 +35,6 @@ public class Soutien {
     public Soutien() {
         // Par défaut, un soutien est en attente et a pour date la date actuelle
         this.etat = EtatSoutien.EN_ATTENTE;
-        this.date = new Date();
     }
 
     // Enumération des différents états possibles d'un soutien
@@ -86,12 +85,12 @@ public class Soutien {
         this.duree = duree;
     }
 
-    public Integer getEvaluationEleve() {
-        return evaluationEleve;
+    public Integer getAutoevaluationEleve() {
+        return autoevaluationEleve;
     }
 
-    public void setEvaluationEleve(Integer evaluationEleve) {
-        this.evaluationEleve = evaluationEleve;
+    public void setAutoevaluationEleve(Integer autoevaluationEleve) {
+        this.autoevaluationEleve = autoevaluationEleve;
     }
 
     public String getBilanIntervenant() {
@@ -126,20 +125,12 @@ public class Soutien {
     public void setIntervenant(Intervenant intervenant) {
         this.intervenant = intervenant;
     }
-    
-    
 
-    // Méthode toString pour l'affichage
     @Override
     public String toString() {
-        return "Soutien{" +
-                "id=" + id +
-                ", etat=" + etat +
-                ", descriptif='" + descriptif + '\'' +
-                ", date=" + date +
-                ", duree=" + duree +
-                ", evaluation eleve=" + evaluationEleve +
-                ", bilan intervenant='" + bilanIntervenant + '\'' +
-                '}';
+        return "Soutien{" + "descriptif=" + descriptif + ", matiere=" + matiere + ", eleve=" + eleve + ", classe=" + eleve.getClasse() + ", classe=" + eleve.getEtablissement().getNomEtablissement()+'}';
     }
+    
+    
+    
 }

@@ -1,7 +1,9 @@
 package metier.modele;
 
+import javax.persistence.Entity;
 import java.util.List;
 
+@Entity
 public class Etudiant extends Intervenant {
     private String universite;
     private String specialite;

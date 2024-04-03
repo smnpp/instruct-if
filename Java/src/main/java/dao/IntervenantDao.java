@@ -34,16 +34,18 @@ public class IntervenantDao {
     }
     
     public static Intervenant trouverParId(Long id) {
-        EntityManager em = JpaUtil.obtenirContextePersistance();
-        TypedQuery<Intervenant> query = em.createQuery("SELECT c FROM Intervenant c WHERE c.id = :id", Intervenant.class);
-        query.setParameter("id", id);
-        List<Intervenant> intervenants = query.getResultList();
-        Intervenant result = null;
-        if (!intervenants.isEmpty()) {
-            // on prend le tuple de la première ligne et cela marche car le mail est unique
-            result = intervenants.get(0);
-        }
-        return result;
+        return JpaUtil.obtenirContextePersistance().find(Intervenant.class, id);
+    }
+    public void delete(Intervenant intervenant){
+        JpaUtil.obtenirContextePersistance().remove(intervenant);
+    }
+    public Intervenant update(Intervenant intervenant){
+        return JpaUtil.obtenirContextePersistance().merge(intervenant);
+    }
+    
+    public Integer getNbIntervActif(){
+        EntityManager em = JpaUtil.obtenirContextePersistance();        
+        return em.createQuery("SELECT COUNT(DISTINCT i) FROM Intervenant i WHERE nbIntervention > 0", Integer.class).getSingleResult();
     }
     
     public List<Intervenant> getAllIntervenants() {

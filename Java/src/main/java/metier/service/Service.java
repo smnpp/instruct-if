@@ -12,6 +12,7 @@ import dao.IntervenantDao;
 import java.util.Arrays;
 import metier.modele.Eleve;
 import metier.modele.Intervenant;
+import metier.modele.Etudiant;
 import metier.modele.Etablissement;
 import metier.modele.Matiere;
 import util.Message;
@@ -19,6 +20,8 @@ import util.EducNetApi;
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import metier.modele.Soutien;
 
 /**
@@ -117,28 +120,6 @@ public class Service {
         return retour;
     }
 
-    /*
-    public Eleve trouverEleveParId(Long id) { //Trouver un élève a partir de son ID (non encore utilisée)
-        Eleve retour = null;
-        JpaUtil.creerContextePersistance();
-        Eleve eleve = eleveDao.trouverParId(id);
-        JpaUtil.fermerContextePersistance();
-        if (eleve != null && eleve.getId().equals(id)) {
-            retour = eleve;
-        }
-        return retour;
-    }
-
-    public List<Eleve> consulterListeEleves() { //Consulter la liste de tous les élèves inscrits (non encore utilisée
-        JpaUtil.creerContextePersistance();
-        List<Eleve> eleves = eleveDao.getAllEleves();
-        JpaUtil.fermerContextePersistance();
-        if (eleves != null) {
-            eleves.sort(Comparator.comparing(Eleve::getNom).thenComparing(Eleve::getPrenom));
-        }
-        return eleves;
-    }
-     */
     public Boolean inscrireIntervenant(Intervenant intervenant) {
         Boolean success = false;
         try {
@@ -208,28 +189,24 @@ public class Service {
         return intervenantTrouve;
     }
 
-    public boolean creerSoutien(Eleve eleve, Matiere matiere, String descriptif) {
-        boolean success = false;
+    public Soutien creerSoutien(Eleve eleve, Matiere matiere, String descriptif) {
+        Soutien soutien = new Soutien();
         try {
             JpaUtil.creerContextePersistance();
 
-            Soutien soutien = new Soutien();
             soutien.setEleve(eleve);
             soutien.setDescriptif(descriptif);
             soutien.setMatiere(matiere);
             Intervenant intervenant = trouverIntervenantSoutien(eleve);
             soutien.setIntervenant(intervenant);
             intervenant.setDisponibilite(false);
+            intervenant.setNbIntervention(intervenant.getNbIntervention() + 1);
+
             JpaUtil.ouvrirTransaction();
-            /*
-            if (matiereDao.trouverParNom(matiere.getNom()) == null) {
-                matiereDao.create(matiere);
-            }
-             */
+            intervenantDao.update(intervenant);
             soutienDao.create(soutien);
             JpaUtil.validerTransaction();
-            intervenant.setDisponibilite(false);
-            success = true;
+
             Message.envoyerNotification(intervenant.getTelephone(),
                     "Bonjour "
                     + intervenant.getPrenom() + ", Merci de prendre en charge la demande de soutien en "
@@ -245,27 +222,151 @@ public class Service {
 
         } finally {
             JpaUtil.fermerContextePersistance();
+            return soutien;
         }
-        return success;
+
     }
-    
-    public List<Soutien> obtenirHistoriqueEleve(Eleve eleve){
+
+    public List<Soutien> obtenirHistoriqueEleve(Eleve eleve) {
         JpaUtil.creerContextePersistance();
         List<Soutien> historique = soutienDao.trouverHistoriqueParEleve(eleve);
         JpaUtil.fermerContextePersistance();
         return historique;
     }
-    
-    public List<Soutien> obtenirHistoriqueIntervenant(Intervenant intervenant){
+
+    public List<Soutien> obtenirHistoriqueIntervenant(Intervenant intervenant) {
         JpaUtil.creerContextePersistance();
         List<Soutien> historique = soutienDao.trouverHistoriqueParIntervenant(intervenant);
         JpaUtil.fermerContextePersistance();
         return historique;
     }
 
+    public Boolean lancerVisio(Soutien soutien) {
+        Boolean success = false;
+        try {
+            JpaUtil.creerContextePersistance();
+            soutien.setEtat(Soutien.EtatSoutien.EN_VISIO);
+            soutien.setDate(new Date());
+
+            JpaUtil.ouvrirTransaction();
+            soutienDao.update(soutien);
+            JpaUtil.validerTransaction();
+
+            success = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            JpaUtil.annulerTransaction();
+
+        } finally {
+            JpaUtil.fermerContextePersistance();
+            return success;
+        }
+    }
+
+    public Boolean terminerVisio(Soutien soutien) {
+        Boolean success = false;
+        try {
+            JpaUtil.creerContextePersistance();
+            soutien.setEtat(Soutien.EtatSoutien.TERMINE);
+            Date dateDeFin = new Date();
+            Long dureeDeVisio = dateDeFin.getTime() - soutien.getDate().getTime();
+            soutien.setDuree(TimeUnit.MILLISECONDS.toMinutes(dureeDeVisio));
+            soutien.getIntervenant().setDisponibilite(true);
+
+            JpaUtil.ouvrirTransaction();
+            soutienDao.update(soutien);
+            intervenantDao.update(soutien.getIntervenant());
+            JpaUtil.validerTransaction();
+
+            success = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            JpaUtil.annulerTransaction();
+
+        } finally {
+            JpaUtil.fermerContextePersistance();
+            return success;
+        }
+    }
+
+    public Boolean faireAutoEvaluationEleve(Soutien soutien, Integer niveau) {
+        Boolean success = false;
+        try {
+            JpaUtil.creerContextePersistance();
+            soutien.setAutoevaluationEleve(niveau);
+
+            JpaUtil.ouvrirTransaction();
+            soutienDao.update(soutien);
+            JpaUtil.validerTransaction();
+
+            success = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            JpaUtil.annulerTransaction();
+
+        } finally {
+            JpaUtil.fermerContextePersistance();
+            return success;
+        }
+    }
+
+    public Boolean redigerBilan(Soutien soutien, String bilan) {
+        Boolean success = false;
+        try {
+            JpaUtil.creerContextePersistance();
+            soutien.setBilanIntervenant(bilan);
+
+            JpaUtil.ouvrirTransaction();
+            soutienDao.update(soutien);
+            JpaUtil.validerTransaction();
+
+            Message.envoyerMail("contact@instruct.if", soutien.getEleve().getMail(), "INSTRUCT'IF : ton bilan de soutien", "Bonjour "
+                    + soutien.getEleve().getPrenom() + ", voici le bilan de ton soutien du " + soutien.getDate() + " en " + soutien.getMatiere().getNom() + " redigé par " + soutien.getIntervenant().getPrenom() + " :\n" + bilan + "\n A bientot sur INSTRUCT'IF !");
+
+            success = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            JpaUtil.annulerTransaction();
+
+        } finally {
+            JpaUtil.fermerContextePersistance();
+            return success;
+        }
+    }
+
+    public Integer statNbTotalIntervention() {
+        JpaUtil.creerContextePersistance();
+        Integer result =  soutienDao.getCountInterventions();
+        JpaUtil.fermerContextePersistance();
+        return result;
+    }
+
+    public Double statDureeMoyenneIntervention() {
+        JpaUtil.creerContextePersistance();
+       Double result = soutienDao.getDureeMoyenneInterventions();
+        JpaUtil.fermerContextePersistance();
+        return result;
+    }
+
+    public Double statSatisfactionEleve() {
+        return soutienDao.getSatisfactionMoyenneEleve();
+    }
+    
+    public String statIntervenantMois() {
+        return soutienDao.getIntervenantMois().getPrenom() + " " + soutienDao.getIntervenantMois().getNom();
+    }
+    
+    public Integer statIntervenantActif() {
+        return intervenantDao.getNbIntervActif();
+    }
+    
+    public Integer statNbEleveInscrit() {
+        return eleveDao.getTotalEleveInscrit();
+    }
+
     public void initialisation() {
-        //Etudiant intervenant1 = new Etudiant("Martin", "Camille", "0655447788", niveauIntervenant1, "Sorbonne", "Langues orientales");
-        Intervenant intervenant1 = new Intervenant("Martin", "Camille", "0655447788", "tutu", Arrays.asList(3, 4, 5, 6));
+        Etudiant intervenant1 = new Etudiant("Martin", "Camille", "0655447788", "tutu", Arrays.asList(0, 1, 2, 3, 4, 5, 6), "Sorbonne", "Langues orientales");
+        //Intervenant intervenant1 = new Intervenant("Martin", "Camille", "0655447788", "tutu", Arrays.asList(3, 4, 5, 6));
         inscrireIntervenant(intervenant1);
         Intervenant intervenant2 = new Intervenant("Zola", "Anna", "0633221144", "tata", Arrays.asList(0, 1, 2, 3, 4, 5, 6));
         inscrireIntervenant(intervenant2);
@@ -274,6 +375,7 @@ public class Service {
         Intervenant intervenant4 = new Intervenant("Yourcenar", "Simone", "0722447744", "titi", Arrays.asList(1, 2, 3, 4, 5));
         inscrireIntervenant(intervenant4);
 
+        //il n'est pas possible pour un élève de creer une nouvelle matiere (menu déroulant)
         Matiere allemand = new Matiere("Allemand");
         creerMatiere(allemand);
         Matiere anglais = new Matiere("Anglais");
@@ -289,9 +391,9 @@ public class Service {
         Matiere philosophie = new Matiere("Philosophie");
         creerMatiere(philosophie);
         Matiere physiqueChimie = new Matiere("Physique-Chimie");
-        creerMatiere(physiqueChimie);      
+        creerMatiere(physiqueChimie);
         Matiere svt = new Matiere("SVT");
         creerMatiere(svt);
-   
+
     }
 }

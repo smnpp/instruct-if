@@ -33,19 +33,20 @@ public class EleveDao {
         return result;
     }
     
-    public static Eleve trouverParId(Long id) {
-        EntityManager em = JpaUtil.obtenirContextePersistance();
-        TypedQuery<Eleve> query = em.createQuery("SELECT c FROM Eleve c WHERE c.id = :id", Eleve.class);
-        query.setParameter("id", id);
-        List<Eleve> eleves = query.getResultList();
-        Eleve result = null;
-        if (!eleves.isEmpty()) {
-            // on prend le tuple de la première ligne et cela marche car le mail est unique
-            result = eleves.get(0);
-        }
-        return result;
+    public Integer getTotalEleveInscrit() {
+        EntityManager em = JpaUtil.obtenirContextePersistance();        
+        return em.createQuery("SELECT COUNT (DISTINCT e) FROM Eleve e", Integer.class).getSingleResult();
     }
     
+    public static Eleve trouverParId(Long id) {
+        return JpaUtil.obtenirContextePersistance().find(Eleve.class, id);
+    }
+    public void delete(Eleve eleve){
+        JpaUtil.obtenirContextePersistance().remove(eleve);
+    }
+    public Eleve update(Eleve eleve){
+        return JpaUtil.obtenirContextePersistance().merge(eleve);
+    }
     public List<Eleve> getAllEleves() {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Eleve> query = em.createQuery("SELECT c FROM Eleve c", Eleve.class);
