@@ -14,6 +14,7 @@ import javax.persistence.Id;
  */
 @Entity
 public class Etablissement {
+
     @Id
     private String uai;
     private String nomEtablissement;
@@ -23,13 +24,15 @@ public class Etablissement {
     private String codeDepartement;
     private String departement;
     private String academie;
-    private String ips;
-    
+    private Double ips;
+    private Double latitude;
+    private Double longitude;
+
     public Etablissement() {
-        
+
     }
 
-    public Etablissement(String uai, String nomEtablissement, String secteur, String nomCommune, String codeCommune, String codeDepartement, String departement, String academie, String ips) {
+    public Etablissement(String uai, String nomEtablissement, String secteur, String nomCommune, String codeCommune, String codeDepartement, String departement, String academie, Double ips) {
         this.uai = uai;
         this.nomEtablissement = nomEtablissement;
         this.secteur = secteur;
@@ -40,8 +43,6 @@ public class Etablissement {
         this.academie = academie;
         this.ips = ips;
     }
-    
-    
 
     public String getUai() {
         return uai;
@@ -107,21 +108,33 @@ public class Etablissement {
         this.academie = academie;
     }
 
-    public String getIps() {
+    public Double getIps() {
         return ips;
     }
 
-    public void setIps(String ips) {
+    public void setIps(Double ips) {
         this.ips = ips;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     @Override
     public String toString() {
         return "Etablissement{" + "uai=" + uai + ", nomEtablissement=" + nomEtablissement + ", secteur=" + secteur + ", nomCommune=" + nomCommune + ", codeCommune=" + codeCommune + ", codeDepartement=" + codeDepartement + ", departement=" + departement + ", academie=" + academie + ", ips=" + ips + '}';
     }
-    
-    
-    
-    
-    
+
 }

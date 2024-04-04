@@ -3,26 +3,30 @@
  */
 package metier.service;
 
+import com.google.maps.model.LatLng;
+import util.GeoNetApi;
+import util.Message;
+import util.EducNetApi;
 import dao.EleveDao;
 import dao.EtablissementDao;
 import dao.JpaUtil;
 import dao.MatiereDao;
 import dao.SoutienDao;
 import dao.IntervenantDao;
-import java.util.Arrays;
 import metier.modele.Eleve;
 import metier.modele.Intervenant;
 import metier.modele.Etudiant;
 import metier.modele.Etablissement;
 import metier.modele.Matiere;
-import util.Message;
-import util.EducNetApi;
+import metier.modele.AutreIntervenant;
+import metier.modele.Enseignant;
+import metier.modele.Soutien;
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import metier.modele.Soutien;
 
 /**
  *
@@ -64,7 +68,13 @@ public class Service {
                         etablissementEleve.setCodeDepartement(resultEtablissement.get(5));
                         etablissementEleve.setDepartement(resultEtablissement.get(6));
                         etablissementEleve.setAcademie(resultEtablissement.get(7));
-                        etablissementEleve.setIps(resultEtablissement.get(8));
+                        etablissementEleve.setIps(Double.parseDouble(resultEtablissement.get(8)));
+
+                        LatLng latLng = GeoNetApi.getLatLng(resultEtablissement.get(1) + ", " + resultEtablissement.get(4));
+                        if (!(latLng == null)) {
+                            etablissementEleve.setLatitude(latLng.lat);
+                            etablissementEleve.setLongitude(latLng.lng);
+                        }
                     }
                 } else {
                     etablissementEleve = etablissementTrouve;
@@ -181,7 +191,7 @@ public class Service {
         List<Intervenant> intervenants = intervenantDao.getAllIntervenants();
         Collections.sort(intervenants, Comparator.comparingInt(Intervenant::getNbIntervention));
         for (Intervenant intervenant : intervenants) {
-            if (intervenant.getDisponibilite() == true && intervenant.getNiveau().contains(eleve.getClasse())) {
+            if (intervenant.getDisponibilite() == true && (intervenant.getNiveauMin() >= eleve.getClasse() && intervenant.getNiveauMax() <= eleve.getClasse())) {
                 intervenantTrouve = intervenant;
                 break;
             }
@@ -210,7 +220,7 @@ public class Service {
             Message.envoyerNotification(intervenant.getTelephone(),
                     "Bonjour "
                     + intervenant.getPrenom() + ", Merci de prendre en charge la demande de soutien en "
-                    + matiere.getNom() + " demandée par " + eleve.getPrenom() + " en classe de " + eleve.getClasse());
+                    + matiere.getNom() + " demandée par " + eleve.getPrenom() + " en classe de " + eleve.getClasse() + "ème");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -245,14 +255,18 @@ public class Service {
         Boolean success = false;
         try {
             JpaUtil.creerContextePersistance();
-            soutien.setEtat(Soutien.EtatSoutien.EN_VISIO);
-            soutien.setDate(new Date());
+            if (soutien.getIntervenant() != null) {
+                soutien.setEtat(Soutien.EtatSoutien.EN_VISIO);
+                soutien.setDate(new Date());
 
-            JpaUtil.ouvrirTransaction();
-            soutienDao.update(soutien);
-            JpaUtil.validerTransaction();
+                JpaUtil.ouvrirTransaction();
+                soutienDao.update(soutien);
+                JpaUtil.validerTransaction();
 
-            success = true;
+                success = true;
+            } else {
+                JpaUtil.annulerTransaction();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             JpaUtil.annulerTransaction();
@@ -285,15 +299,16 @@ public class Service {
 
         } finally {
             JpaUtil.fermerContextePersistance();
-            return success;
         }
+        return success;
     }
 
-    public Boolean faireAutoEvaluationEleve(Soutien soutien, Integer niveau) {
+    public Boolean faireAutoEvaluationEleve(Soutien soutien, Integer note) {
         Boolean success = false;
         try {
             JpaUtil.creerContextePersistance();
-            soutien.setAutoevaluationEleve(niveau);
+            double noteCastee = note;
+            soutien.setAutoevaluationEleve(noteCastee);
 
             JpaUtil.ouvrirTransaction();
             soutienDao.update(soutien);
@@ -334,45 +349,76 @@ public class Service {
         }
     }
 
-    public Integer statNbTotalIntervention() {
+    public Long statNbTotalIntervention() {
         JpaUtil.creerContextePersistance();
-        Integer result =  soutienDao.getCountInterventions();
+        Long result = soutienDao.getCountInterventions();
         JpaUtil.fermerContextePersistance();
         return result;
     }
 
     public Double statDureeMoyenneIntervention() {
         JpaUtil.creerContextePersistance();
-       Double result = soutienDao.getDureeMoyenneInterventions();
+        Double result = soutienDao.getDureeMoyenneInterventions();
         JpaUtil.fermerContextePersistance();
         return result;
     }
 
     public Double statSatisfactionEleve() {
-        return soutienDao.getSatisfactionMoyenneEleve();
+        JpaUtil.creerContextePersistance();
+        Double result = soutienDao.getSatisfactionMoyenneEleve();
+        JpaUtil.fermerContextePersistance();
+        return result;
     }
-    
+
     public String statIntervenantMois() {
-        return soutienDao.getIntervenantMois().getPrenom() + " " + soutienDao.getIntervenantMois().getNom();
+        JpaUtil.creerContextePersistance();
+        Long intervenantMoisId = soutienDao.getIntervenantMoisId();
+        String result = "Pas d'intervenant ce mois";
+        if (intervenantMoisId != null) {
+            Intervenant intervenantMois = intervenantDao.trouverParId(intervenantMoisId);
+            result = intervenantMois.getPrenom() + " " + intervenantMois.getNom();
+        }
+
+        JpaUtil.fermerContextePersistance();
+        return result;
     }
-    
-    public Integer statIntervenantActif() {
-        return intervenantDao.getNbIntervActif();
+
+    public Long statIntervenantActif() {
+        JpaUtil.creerContextePersistance();
+        Long result = intervenantDao.getNbIntervActif();
+        JpaUtil.fermerContextePersistance();
+        return result;
     }
-    
-    public Integer statNbEleveInscrit() {
-        return eleveDao.getTotalEleveInscrit();
+
+    public Long statNbEleveInscrit() {
+        JpaUtil.creerContextePersistance();
+        Long result = eleveDao.getTotalEleveInscrit();
+        JpaUtil.fermerContextePersistance();
+        return result;
+    }
+
+    public Double statIpsMoyenSoutien() {
+        JpaUtil.creerContextePersistance();
+        Double result = soutienDao.getIPSMoyenEtablissements();
+        JpaUtil.fermerContextePersistance();
+        return result;
+    }
+
+    public Map<String, Long> statQuantiteSoutienParDepartement() {
+        JpaUtil.creerContextePersistance();
+        Map<String, Long> result = soutienDao.getQuantiteSoutienParDepartement();
+        JpaUtil.fermerContextePersistance();
+        return result;
     }
 
     public void initialisation() {
-        Etudiant intervenant1 = new Etudiant("Martin", "Camille", "0655447788", "tutu", Arrays.asList(0, 1, 2, 3, 4, 5, 6), "Sorbonne", "Langues orientales");
-        //Intervenant intervenant1 = new Intervenant("Martin", "Camille", "0655447788", "tutu", Arrays.asList(3, 4, 5, 6));
+        Etudiant intervenant1 = new Etudiant("Martin", "Camille", "0655447788", "tutu", 6, 0, "Sorbonne", "Langues orientales");
         inscrireIntervenant(intervenant1);
-        Intervenant intervenant2 = new Intervenant("Zola", "Anna", "0633221144", "tata", Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+        AutreIntervenant intervenant2 = new AutreIntervenant("Zola", "Anna", "0633221144", "tata", 6, 0, "Retraite");
         inscrireIntervenant(intervenant2);
-        Intervenant intervenant3 = new Intervenant("Hugo", "Emile", "0788559944", "toto", Arrays.asList(3));
+        Enseignant intervenant3 = new Enseignant("Hugo", "Emile", "0788559944", "toto", 3, 3, "collège");
         inscrireIntervenant(intervenant3);
-        Intervenant intervenant4 = new Intervenant("Yourcenar", "Simone", "0722447744", "titi", Arrays.asList(1, 2, 3, 4, 5));
+        AutreIntervenant intervenant4 = new AutreIntervenant("Yourcenar", "Simone", "0722447744", "titi", 5, 1, "médecin");
         inscrireIntervenant(intervenant4);
 
         //il n'est pas possible pour un élève de creer une nouvelle matiere (menu déroulant)

@@ -1,19 +1,19 @@
 package metier.modele;
 
 import javax.persistence.Entity;
-import java.util.List;
 
 @Entity
 public class Etudiant extends Intervenant {
+
     private String universite;
     private String specialite;
 
-    public Etudiant(){
-        
+    public Etudiant() {
+
     }
 
-    public Etudiant(String nom, String prenom, String telephone, String mdp, List<Integer> niveau, String universite, String specialite) {
-        super(nom, prenom, telephone, mdp, niveau);
+    public Etudiant(String nom, String prenom, String telephone, String mdp, Integer niveauMin, Integer niveauMax, String universite, String specialite) {
+        super(nom, prenom, telephone, mdp, niveauMin, niveauMax);
         this.universite = universite;
         this.specialite = specialite;
     }
@@ -38,6 +38,5 @@ public class Etudiant extends Intervenant {
     public String toString() {
         return "Etudiant{" + super.toString() + ", universite=" + universite + ", specialite=" + specialite + '}';
     }
-    
-    
+
 }

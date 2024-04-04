@@ -1,19 +1,19 @@
 package metier.modele;
 
 import javax.persistence.Entity;
-import java.util.List;
 
 @Entity
-public class AutreIntervenant extends Intervenant{
+public class AutreIntervenant extends Intervenant {
+
     private String activite;
 
-    public AutreIntervenant(String nom, String prenom, String telephone, String mdp, List<Integer> niveau, String activite){
-        super(nom, prenom, telephone, mdp, niveau);
+    public AutreIntervenant(String nom, String prenom, String telephone, String mdp, Integer niveauMin, Integer niveauMax, String activite) {
+        super(nom, prenom, telephone, mdp, niveauMin, niveauMax);
         this.activite = activite;
     }
-    
-    public AutreIntervenant(){
-        
+
+    public AutreIntervenant() {
+
     }
 
     public String getActivite() {
@@ -29,5 +29,4 @@ public class AutreIntervenant extends Intervenant{
         return "Enseignant{" + super.toString() + ", Activite=" + activite + '}';
     }
 
-    
 }

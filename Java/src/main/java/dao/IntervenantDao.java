@@ -32,22 +32,26 @@ public class IntervenantDao {
         }
         return result;
     }
-    
+
     public static Intervenant trouverParId(Long id) {
         return JpaUtil.obtenirContextePersistance().find(Intervenant.class, id);
     }
-    public void delete(Intervenant intervenant){
+
+    public void delete(Intervenant intervenant) {
         JpaUtil.obtenirContextePersistance().remove(intervenant);
     }
-    public Intervenant update(Intervenant intervenant){
+
+    public Intervenant update(Intervenant intervenant) {
         return JpaUtil.obtenirContextePersistance().merge(intervenant);
     }
-    
-    public Integer getNbIntervActif(){
-        EntityManager em = JpaUtil.obtenirContextePersistance();        
-        return em.createQuery("SELECT COUNT(DISTINCT i) FROM Intervenant i WHERE nbIntervention > 0", Integer.class).getSingleResult();
+
+    public Long getNbIntervActif() {
+        EntityManager em = JpaUtil.obtenirContextePersistance();
+        TypedQuery<Long> query = em.createQuery("SELECT COUNT(DISTINCT i) FROM Intervenant i WHERE i.nbIntervention > 0", Long.class);
+        return query.getSingleResult();
+
     }
-    
+
     public List<Intervenant> getAllIntervenants() {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Intervenant> query = em.createQuery("SELECT c FROM Intervenant c", Intervenant.class);

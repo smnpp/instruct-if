@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Soutien {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,15 +23,14 @@ public class Soutien {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date; // date de lancement de la visio
     private Long duree; // en minutes
-    private Integer autoevaluationEleve;
+    private Double autoevaluationEleve;
     private String bilanIntervenant;
     @ManyToOne
-    private Matiere matiere ;
+    private Matiere matiere;
     @ManyToOne
-    private Eleve eleve ;
+    private Eleve eleve;
     @ManyToOne
     private Intervenant intervenant;
-    
 
     public Soutien() {
         // Par défaut, un soutien est en attente et a pour date la date actuelle
@@ -85,11 +85,11 @@ public class Soutien {
         this.duree = duree;
     }
 
-    public Integer getAutoevaluationEleve() {
+    public Double getAutoevaluationEleve() {
         return autoevaluationEleve;
     }
 
-    public void setAutoevaluationEleve(Integer autoevaluationEleve) {
+    public void setAutoevaluationEleve(Double autoevaluationEleve) {
         this.autoevaluationEleve = autoevaluationEleve;
     }
 
@@ -108,7 +108,6 @@ public class Soutien {
     public void setEleve(Eleve eleve) {
         this.eleve = eleve;
     }
-    
 
     public Matiere getMatiere() {
         return matiere;
@@ -128,9 +127,7 @@ public class Soutien {
 
     @Override
     public String toString() {
-        return "Soutien{" + "descriptif=" + descriptif + ", matiere=" + matiere + ", eleve=" + eleve + ", classe=" + eleve.getClasse() + ", classe=" + eleve.getEtablissement().getNomEtablissement()+'}';
+        return "Soutien{" + "descriptif=" + descriptif + ", matiere=" + matiere + ", eleve=" + eleve + ", classe=" + eleve.getClasse() + ", etablissement=" + eleve.getEtablissement().getNomEtablissement() + '}';
     }
-    
-    
-    
+
 }

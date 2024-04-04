@@ -32,21 +32,22 @@ public class MatiereDao {
         }
         return result;
     }
-    
+
     public static Matiere trouverParId(Long id) {
         return JpaUtil.obtenirContextePersistance().find(Matiere.class, id);
     }
-    public void delete(Matiere matiere){
+
+    public void delete(Matiere matiere) {
         JpaUtil.obtenirContextePersistance().remove(matiere);
     }
-    public Matiere update(Matiere matiere){
+
+    public Matiere update(Matiere matiere) {
         return JpaUtil.obtenirContextePersistance().merge(matiere);
     }
-    
+
     public List<Matiere> getAllMatieres() {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Matiere> query = em.createQuery("SELECT c FROM Matiere c", Matiere.class);
         return query.getResultList();
     }
 }
-

@@ -8,11 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import java.util.List;
-
 @Entity
-@Inheritance (strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Intervenant {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,19 +20,21 @@ public class Intervenant {
     @Column(unique = true)
     private String telephone;
     private String motDePasse;
-    private List<Integer> niveau;
+    private Integer niveauMin;
+    private Integer niveauMax;
     private Boolean disponibilite;
     private Integer nbIntervention;
 
-    public Intervenant(){
-        
+    public Intervenant() {
+
     }
 
-    public Intervenant(String nom, String prenom, String telephone, String motDePasse,List<Integer> niveau) {
+    public Intervenant(String nom, String prenom, String telephone, String motDePasse, Integer niveauMin, Integer niveauMax) {
         this.nom = nom;
         this.prenom = prenom;
         this.telephone = telephone;
-        this.niveau = niveau;
+        this.niveauMin = niveauMin;
+        this.niveauMax = niveauMax;
         this.disponibilite = true;
         this.motDePasse = motDePasse;
         this.nbIntervention = 0;
@@ -63,12 +64,20 @@ public class Intervenant {
         this.telephone = telephone;
     }
 
-    public List<Integer> getNiveau() {
-        return niveau;
+    public Integer getNiveauMin() {
+        return niveauMin;
     }
 
-    public void setNiveau(List<Integer> niveau) {
-        this.niveau = niveau;
+    public void setNiveauMin(Integer niveauMin) {
+        this.niveauMin = niveauMin;
+    }
+
+    public Integer getNiveauMax() {
+        return niveauMax;
+    }
+
+    public void setNiveauMax(Integer niveauMax) {
+        this.niveauMax = niveauMax;
     }
 
     public Boolean getDisponibilite() {
@@ -93,11 +102,10 @@ public class Intervenant {
 
     public void setNbIntervention(Integer nbIntervention) {
         this.nbIntervention = nbIntervention;
-    }  
-    
+    }
 
     @Override
     public String toString() {
-        return "Intervenant{" + "id=" + id + ", nom=" + nom + ", prenom=" + prenom + ", telephone=" + telephone + ", motDePasse=" + motDePasse + ", niveau=" + niveau + ", disponibilite=" + disponibilite + '}';
+        return "Intervenant{" + "id=" + id + ", nom=" + nom + ", prenom=" + prenom + ", telephone=" + telephone + ", motDePasse=" + motDePasse + ", niveauMin=" + niveauMin + ", niveauMax=" + niveauMax + ", disponibilite=" + disponibilite + '}';
     }
 }

@@ -8,16 +8,17 @@ import javax.persistence.Id;
 
 @Entity
 public class Matiere {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String nom;
-    
+
     public Long getId() {
         return id;
     }
-    
+
     public String getNom() {
         return nom;
     }
@@ -25,9 +26,9 @@ public class Matiere {
     public void setNom(String nom) {
         this.nom = nom;
     }
-    
-    public Matiere(){
-        
+
+    public Matiere() {
+
     }
 
     public Matiere(String nom) {
@@ -83,5 +84,5 @@ public class Matiere {
         }
         return matieres;
     }
-    */
+     */
 }

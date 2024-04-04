@@ -13,9 +13,9 @@ import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import java.util.Date;
 
-
 @Entity
 public class Eleve implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,24 +34,20 @@ public class Eleve implements Serializable {
     @ManyToOne
     private Etablissement etablissement;
     //private String uai;
-    
-
 
     //Constructeur par défaut nécessaire pour JPA
     public Eleve() {
     }
 
     // Constructeur
-
     public Eleve(String nom, String prenom, String mail, String motDePasse, Date dateNaissance, Integer classe) {
         this.nom = nom;
         this.prenom = prenom;
         this.mail = mail;
         this.motDePasse = motDePasse;
         this.classe = classe;
-        this.dateNaissance = dateNaissance ;
+        this.dateNaissance = dateNaissance;
     }
-
 
     // Getter et Setter pour id
     public Long getId() {
@@ -99,15 +95,14 @@ public class Eleve implements Serializable {
     }
 
     // Getter et Setter pour adressePostale
-
     public Date getDateNaissance() {
         return dateNaissance;
     }
-    
+
     public void setDateNaissance(Date dateNaissance) {
         this.dateNaissance = dateNaissance;
     }
-    
+
     public Integer getClasse() {
         return classe;
     }
@@ -123,14 +118,10 @@ public class Eleve implements Serializable {
     public void setEtablissement(Etablissement etablissement) {
         this.etablissement = etablissement;
     }
-    
-    
-    
 
     @Override
     public String toString() {
         return "Eleve{" + "id=" + id + ", nom=" + nom + ", prenom=" + prenom + ", mail=" + mail + ", motDePasse=" + motDePasse + ", dateNaissance=" + dateNaissance + ", classe=" + classe + '}';
     }
-    
 
 }

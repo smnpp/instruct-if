@@ -32,25 +32,28 @@ public class EleveDao {
         }
         return result;
     }
-    
-    public Integer getTotalEleveInscrit() {
-        EntityManager em = JpaUtil.obtenirContextePersistance();        
-        return em.createQuery("SELECT COUNT (DISTINCT e) FROM Eleve e", Integer.class).getSingleResult();
+
+    public Long getTotalEleveInscrit() {
+        EntityManager em = JpaUtil.obtenirContextePersistance();
+        TypedQuery<Long> query = em.createQuery("SELECT COUNT (DISTINCT e) FROM Eleve e", Long.class);
+        return query.getSingleResult();
     }
-    
+
     public static Eleve trouverParId(Long id) {
         return JpaUtil.obtenirContextePersistance().find(Eleve.class, id);
     }
-    public void delete(Eleve eleve){
+
+    public void delete(Eleve eleve) {
         JpaUtil.obtenirContextePersistance().remove(eleve);
     }
-    public Eleve update(Eleve eleve){
+
+    public Eleve update(Eleve eleve) {
         return JpaUtil.obtenirContextePersistance().merge(eleve);
     }
+
     public List<Eleve> getAllEleves() {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Eleve> query = em.createQuery("SELECT c FROM Eleve c", Eleve.class);
         return query.getResultList();
     }
 }
-
