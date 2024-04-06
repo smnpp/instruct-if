@@ -1,7 +1,11 @@
 metier\modele\Soutien.class
+vue\MainBis.class
 metier\modele\Intervenant_.class
 dao\EleveDao.class
 metier\modele\Matiere.class
+util\Saisie.class
+metier\modele\Enseignant_.class
+metier\modele\AutreIntervenant_.class
 util\EducNetApi.class
 dao\SoutienDao.class
 dao\JpaUtil$1.class
@@ -10,6 +14,7 @@ metier\modele\Enseignant.class
 metier\modele\AutreIntervenant.class
 metier\modele\Matiere_.class
 dao\JpaUtil.class
+metier\modele\Etudiant_.class
 metier\modele\Etablissement.class
 metier\service\Service.class
 util\GeoNetApi.class

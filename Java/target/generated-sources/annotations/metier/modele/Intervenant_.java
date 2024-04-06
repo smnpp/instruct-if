@@ -1,11 +1,10 @@
 package metier.modele;
 
-import java.util.List;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2024-03-31T16:53:08")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2024-04-06T17:51:43")
 @StaticMetamodel(Intervenant.class)
 public class Intervenant_ { 
 
@@ -16,6 +15,7 @@ public class Intervenant_ {
     public static volatile SingularAttribute<Intervenant, Long> id;
     public static volatile SingularAttribute<Intervenant, String> nom;
     public static volatile SingularAttribute<Intervenant, String> prenom;
-    public static volatile SingularAttribute<Intervenant, List> niveau;
+    public static volatile SingularAttribute<Intervenant, Integer> niveauMin;
+    public static volatile SingularAttribute<Intervenant, Integer> niveauMax;
 
 }

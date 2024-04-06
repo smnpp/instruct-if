@@ -7,6 +7,7 @@ package dao;
  *
  * @author selghissas
  */
+import java.util.ArrayList;
 import java.util.HashMap;
 import metier.modele.Soutien;
 import metier.modele.Eleve;
@@ -87,26 +88,28 @@ public class SoutienDao {
         return query.getSingleResult();
     }
 
-    public Map<String, Long> getQuantiteSoutienParDepartement() {
+    public List<List<Object>> getQuantiteSoutienParCoordonnees() {
         EntityManager em = JpaUtil.obtenirContextePersistance();
 
-        // Requête JPQL pour compter la quantité de soutien par département
+        // Requête JPQL pour compter la quantité de soutien par coordonnées géographiques
         TypedQuery<Object[]> query = em.createQuery(
-                "SELECT e.departement, COUNT(s) "
+                "SELECT e.longitude, e.latitude, COUNT(s) "
                 + "FROM Soutien s "
                 + "JOIN s.eleve eleve "
                 + "JOIN eleve.etablissement e "
-                + "GROUP BY e.departement",
+                + "GROUP BY e.longitude, e.latitude",
                 Object[].class
         );
 
-        // Récupération des résultats et création de la Map
-        Map<String, Long> resultats = new HashMap<>();
+        // Récupération des résultats et création de la liste de listes
         List<Object[]> resultList = query.getResultList();
+        List<List<Object>> resultats = new ArrayList<>();
         for (Object[] row : resultList) {
-            String departement = (String) row[0];
-            Long nombreInterventions = (Long) row[1];
-            resultats.put(departement, nombreInterventions);
+            List<Object> coordonneesEtNombre = new ArrayList<>();
+            coordonneesEtNombre.add(Double.valueOf(row[0].toString())); // Convert to Double for longitude
+            coordonneesEtNombre.add(Double.valueOf(row[1].toString())); // Convert to Double for latitude
+            coordonneesEtNombre.add(((Long) row[2]).intValue()); // Quantité de soutien, already Integer
+            resultats.add(coordonneesEtNombre);
         }
 
         return resultats;

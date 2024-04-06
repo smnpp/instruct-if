@@ -119,7 +119,7 @@ public class Main {
             System.out.println("\u001b[31m" + "Satisfaction moyenne des élèves : " + service.statSatisfactionEleve() + "/5");
             System.out.println("\u001b[31m" + "Intervenant du mois : " + service.statIntervenantMois());
             System.out.println("\u001b[31m" + "IPS moyen des établissement : " + service.statIpsMoyenSoutien());
-            System.out.println("\u001b[31m" + "Quantite d'intervention par département : " + service.statQuantiteSoutienParDepartement());
+            System.out.println("\u001b[31m" + "Quantite d'intervention par coordonnées : " + service.statQuantiteSoutienParCoordonnees());
             System.out.println("\u001b[31m" + "======================");
 
             System.out.println("\u001b[34m" + service.obtenirHistoriqueEleve(eleve1));

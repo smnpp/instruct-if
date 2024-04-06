@@ -9,13 +9,13 @@ import metier.modele.Intervenant;
 import metier.modele.Matiere;
 import metier.modele.Soutien.EtatSoutien;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2024-03-31T16:53:08")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2024-04-06T17:51:43")
 @StaticMetamodel(Soutien.class)
 public class Soutien_ { 
 
     public static volatile SingularAttribute<Soutien, Date> date;
-    public static volatile SingularAttribute<Soutien, Integer> evaluationEleve;
     public static volatile SingularAttribute<Soutien, String> bilanIntervenant;
+    public static volatile SingularAttribute<Soutien, Double> autoevaluationEleve;
     public static volatile SingularAttribute<Soutien, Long> duree;
     public static volatile SingularAttribute<Soutien, Long> id;
     public static volatile SingularAttribute<Soutien, Eleve> eleve;

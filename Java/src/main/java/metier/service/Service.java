@@ -404,9 +404,9 @@ public class Service {
         return result;
     }
 
-    public Map<String, Long> statQuantiteSoutienParDepartement() {
+    public List<List<Object>> statQuantiteSoutienParCoordonnees() {
         JpaUtil.creerContextePersistance();
-        Map<String, Long> result = soutienDao.getQuantiteSoutienParDepartement();
+        List<List<Object>> result = soutienDao.getQuantiteSoutienParCoordonnees();
         JpaUtil.fermerContextePersistance();
         return result;
     }
