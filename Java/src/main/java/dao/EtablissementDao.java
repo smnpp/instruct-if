@@ -16,7 +16,7 @@ public class EtablissementDao {
         em.persist(etablissement);
     }
 
-    public static Etablissement trouverParId(String uai) {
+    public static Etablissement getParId(String uai) {
         return JpaUtil.obtenirContextePersistance().find(Etablissement.class, uai);
     }
 

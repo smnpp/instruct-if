@@ -36,6 +36,37 @@ public class SoutienDao {
     public Soutien update(Soutien soutien) {
         return JpaUtil.obtenirContextePersistance().merge(soutien);
     }
+    
+    public Soutien getSoutienEnAttenteParEleveId(Long eleveId) {
+        EntityManager em = JpaUtil.obtenirContextePersistance();
+        TypedQuery<Soutien> query = em.createQuery(
+                "SELECT s FROM Soutien s WHERE s.eleve.id = :eleveId AND s.etat = metier.modele.Soutien$EtatSoutien.EN_ATTENTE",
+                Soutien.class);
+        query.setParameter("eleveId", eleveId);
+        List<Soutien> resultats = query.getResultList();
+        Soutien resultat = null ;
+        if (!resultats.isEmpty()) {
+            // retourne le premier soutien trouvé
+            resultat = resultats.get(0);
+        }
+        return resultat; 
+    }
+    
+    public Soutien getSoutienEnAttenteParIntervenantId(Long intervenantId) {
+        EntityManager em = JpaUtil.obtenirContextePersistance();
+        TypedQuery<Soutien> query = em.createQuery(
+                "SELECT s FROM Soutien s WHERE s.intervenant.id = :intervenantId AND s.etat = metier.modele.Soutien$EtatSoutien.EN_ATTENTE",
+                Soutien.class);
+        query.setParameter("intervenant", intervenantId);
+        List<Soutien> resultats = query.getResultList();
+        Soutien resultat = null ;
+        if (!resultats.isEmpty()) {
+            // retourne le premier soutien trouvé
+            resultat = resultats.get(0);
+        }
+        return resultat; 
+    }
+
 
     public List<Soutien> getAllSoutiens() {
         EntityManager em = JpaUtil.obtenirContextePersistance();
@@ -115,14 +146,14 @@ public class SoutienDao {
         return resultats;
     }
 
-    public static List<Soutien> trouverHistoriqueParEleve(Eleve eleve) {
+    public static List<Soutien> getHistoriqueParEleve(Eleve eleve) {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Soutien> query = em.createQuery("SELECT s FROM Soutien s WHERE s.eleve = :eleve", Soutien.class);
         query.setParameter("eleve", eleve);
         return query.getResultList();
     }
 
-    public static List<Soutien> trouverHistoriqueParIntervenant(Intervenant intervenant) {
+    public static List<Soutien> getHistoriqueParIntervenant(Intervenant intervenant) {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Soutien> query = em.createQuery("SELECT s FROM Soutien s WHERE s.intervenant = :intervenant", Soutien.class);
         query.setParameter("intervenant", intervenant);

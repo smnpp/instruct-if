@@ -20,7 +20,7 @@ public class IntervenantDao {
     }
 
     //On pourra ajouter ici d'autres méthodes pour gérer les intervenants (find, update, delete...)
-    public static Intervenant trouverParTelephone(String telephone) {
+    public static Intervenant getParTelephone(String telephone) {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Intervenant> query = em.createQuery("SELECT c FROM Intervenant c WHERE c.telephone = :telephone", Intervenant.class);
         query.setParameter("telephone", telephone);
@@ -33,7 +33,7 @@ public class IntervenantDao {
         return result;
     }
 
-    public static Intervenant trouverParId(Long id) {
+    public static Intervenant getParId(Long id) {
         return JpaUtil.obtenirContextePersistance().find(Intervenant.class, id);
     }
 
@@ -51,10 +51,20 @@ public class IntervenantDao {
         return query.getSingleResult();
 
     }
+    
+    public Long getNbIntervDisponibles() {
+        EntityManager em = JpaUtil.obtenirContextePersistance();
+        TypedQuery<Long> query = em.createQuery("SELECT COUNT(DISTINCT i) FROM Intervenant i WHERE i.disponibilite > 0", Long.class);
+        return query.getSingleResult();
+
+    }
+    
 
     public List<Intervenant> getAllIntervenants() {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Intervenant> query = em.createQuery("SELECT c FROM Intervenant c", Intervenant.class);
         return query.getResultList();
     }
+
+
 }

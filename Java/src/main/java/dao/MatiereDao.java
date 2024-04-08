@@ -20,7 +20,7 @@ public class MatiereDao {
     }
 
     //On pourra ajouter ici d'autres méthodes pour gérer les matieres (find, update, delete...)
-    public static Matiere trouverParNom(String nom) {
+    public static Matiere getParNom(String nom) {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Matiere> query = em.createQuery("SELECT c FROM Matiere c WHERE c.nom = :nom", Matiere.class);
         query.setParameter("nom", nom);
@@ -33,7 +33,7 @@ public class MatiereDao {
         return result;
     }
 
-    public static Matiere trouverParId(Long id) {
+    public static Matiere getParId(Long id) {
         return JpaUtil.obtenirContextePersistance().find(Matiere.class, id);
     }
 

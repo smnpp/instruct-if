@@ -20,7 +20,7 @@ public class EleveDao {
     }
 
     //On pourra ajouter ici d'autres méthodes pour gérer les eleves (find, update, delete...)
-    public static Eleve trouverParMail(String mail) {
+    public static Eleve getParMail(String mail) {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Eleve> query = em.createQuery("SELECT c FROM Eleve c WHERE c.mail = :mail", Eleve.class);
         query.setParameter("mail", mail);
@@ -39,7 +39,7 @@ public class EleveDao {
         return query.getSingleResult();
     }
 
-    public static Eleve trouverParId(Long id) {
+    public static Eleve getParId(Long id) {
         return JpaUtil.obtenirContextePersistance().find(Eleve.class, id);
     }
 
