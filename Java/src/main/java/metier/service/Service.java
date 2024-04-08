@@ -335,35 +335,17 @@ public class Service {
         }
     }
 
-    public String trouverHistoriqueEleve(Eleve eleve) {
+    public List<Soutien> trouverHistoriqueEleve(Eleve eleve) {
         JpaUtil.creerContextePersistance();
         List<Soutien> historique = soutienDao.getHistoriqueParEleve(eleve);
-        StringBuilder sb = new StringBuilder();
-        for (Soutien soutien : historique) {
-            sb.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
-                    soutien.getDate(),
-                    soutien.getIntervenant().getPrenom(),
-                    soutien.getIntervenant().getNom(),
-                    soutien.getMatiere().getNom(),
-                    soutien.getBilanIntervenant()));
-        }
-        return sb.toString();
+        return historique;
     }
 
-    public String trouverHistoriqueIntervenant(Long intervenantId) {
+    public List<Soutien> trouverHistoriqueIntervenant(Long intervenantId) {
         JpaUtil.creerContextePersistance();
         Intervenant intervenant = intervenantDao.getParId(intervenantId) ;
         List<Soutien> historique = soutienDao.getHistoriqueParIntervenant(intervenant);
-        StringBuilder sb = new StringBuilder();
-        for (Soutien soutien : historique) {
-            sb.append(String.format("Date: %s, Élève: %s %s, Matière: %s, Note de l'élève: %s ; ",
-                    soutien.getDate(),
-                    soutien.getEleve().getPrenom(),
-                    soutien.getEleve().getNom(),
-                    soutien.getMatiere().getNom(),
-                    soutien.getAutoevaluationEleve()));
-        }
-        return sb.toString();
+        return historique ;
     }
 
     public Boolean lancerVisio(Soutien soutien) {
