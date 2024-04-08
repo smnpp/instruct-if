@@ -125,9 +125,8 @@ public class Main {
             Soutien soutien3 = service.obtenirSoutienEnAttenteParEleveId(eleve3.getId());
             Soutien soutien4 = service.obtenirSoutienEnAttenteParEleveId(eleve4.getId());
             Soutien soutien5 = service.obtenirSoutienEnAttenteParEleveId(eleve5.getId());
-            
+
             //Remarque : Deux possibilités pour persister les soutiens en fonction de la vision qu'on veut adopter 
-            
             //Possibilité 1 : Plusieurs élèves peuvent demander un soutien en même temps
             //Dans ce cas, on enregistre la demande, et on appelle creerSoutiens 
             //on regarde s'il y a assez d'intervenant
@@ -136,134 +135,132 @@ public class Main {
             //Et on retourne la liste des soutiens créée
             //Puis on extrait les soutiens de cette liste
             //C'est l'hypothèse adoptée ci-dessus --> gestion de la concurrence
-            
             //Possibilité 2 : 
             //Pas de concurrence possible : dès qu'un élève demande un soutien, son soutien est créé
             //s'il y a un intervenant disponible
             //Dans ce cas, il suffit de créer le soutien en appelant creerSoutien
             //Ce cas sera démontré plus loin
-
             //Lancement des visios pour les soutien existant
             System.out.println(
                     service.lancerVisio(soutien1)
                     ? "\u001b[32m" + "Lancement de la visio pour le soutien1"
-                    : "\u001b[31m" +"La visio ne peut être lancée pour le soutien1 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien1 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
                     service.lancerVisio(soutien2)
                     ? "\u001b[32m" + "Lancement de la visio pour le soutien2"
-                    : "\u001b[31m" +"La visio ne peut être lancée pour le soutien2 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien2 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
                     service.lancerVisio(soutien3)
                     ? "\u001b[32m" + "Lancement de la visio pour le soutien3"
-                    : "\u001b[31m" +"La visio ne peut être lancée pour le soutien3 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien3 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
                     service.lancerVisio(soutien4)
                     ? "\u001b[32m" + "Lancement de la visio pour le soutien4"
-                    : "\u001b[31m" +"La visio ne peut être lancée pour le soutien4 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien4 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
                     service.lancerVisio(soutien5)
                     ? "\u001b[32m" + "Lancement de la visio pour le soutien5"
-                    : "\u001b[31m" +"La visio ne peut être lancée pour le soutien5 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien5 (peut-être qu'il n'existe pas)"
             );
-            
+
             //Fin des visios pour les soutiens existant
             System.out.println(
                     service.terminerVisio(soutien1)
                     ? "\u001b[32m" + "Fin de la visio pour le soutien1"
-                    : "\u001b[31m" +"La visio ne peut être arrêtée pour le soutien1 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien1 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
                     service.terminerVisio(soutien2)
                     ? "\u001b[32m" + "Fin de la visio pour le soutien2"
-                    : "\u001b[31m" +"La visio ne peut être arrêtée pour le soutien2 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien2 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
                     service.terminerVisio(soutien3)
                     ? "\u001b[32m" + "Fin de la visio pour le soutien3"
-                    : "\u001b[31m" +"La visio ne peut être arrêtée pour le soutien3 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien3 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
                     service.terminerVisio(soutien4)
                     ? "\u001b[32m" + "Fin de la visio pour le soutien4"
-                    : "\u001b[31m" +"La visio ne peut être arrêtée pour le soutien4 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien4 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
                     service.terminerVisio(soutien5)
                     ? "\u001b[32m" + "Fin de la visio pour le soutien5"
-                    : "\u001b[31m" +"La visio ne peut être arrêtée pour le soutien5 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien5 (peut-être qu'il n'existe pas)"
             );
-            
+
             //Rédaction des Autoévaluations Elèves et Bilans Intervenants
-            String bilanIntervenant = "Bonne séance" ;
-            
+            String bilanIntervenant = "Bonne séance";
+
             System.out.println(
-                    service.faireAutoEvaluationEleve(soutien1,4)
+                    service.faireAutoEvaluationEleve(soutien1, 4)
                     ? "\u001b[32m" + "Autoévaluation de l'élève faite pour le soutien1"
-                    : "\u001b[31m" +"L'autoévaluation de l'élève ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "L'autoévaluation de l'élève ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
-                    service.redigerBilan(soutien1,bilanIntervenant)
+                    service.redigerBilan(soutien1, bilanIntervenant)
                     ? "\u001b[32m" + "Bilan de l'intervenant fait pour le soutien1"
-                    : "\u001b[31m" +"Le bilan de l'intervenant ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
-                    service.faireAutoEvaluationEleve(soutien2,3)
+                    service.faireAutoEvaluationEleve(soutien2, 3)
                     ? "\u001b[32m" + "Autoévaluation de l'élève faite pour le soutien2"
-                    : "\u001b[31m" +"L'autoévaluation de l'élève ne peut être faite pour le soutien2 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "L'autoévaluation de l'élève ne peut être faite pour le soutien2 (peut-être qu'il n'existe pas)"
             );
             System.out.println(
-                    service.redigerBilan(soutien2,bilanIntervenant)
+                    service.redigerBilan(soutien2, bilanIntervenant)
                     ? "\u001b[32m" + "Bilan de l'intervenant fait pour le soutien2"
-                    : "\u001b[31m" +"Le bilan de l'intervenant ne peut être faite pour le soutien2 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien2 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
-                    service.faireAutoEvaluationEleve(soutien3,2)
+                    service.faireAutoEvaluationEleve(soutien3, 2)
                     ? "\u001b[32m" + "Autoévaluation de l'élève faite pour le soutien3"
-                    : "\u001b[31m" +"L'autoévaluation de l'élève ne peut être faite pour le soutien3 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "L'autoévaluation de l'élève ne peut être faite pour le soutien3 (peut-être qu'il n'existe pas)"
             );
             System.out.println(
-                    service.redigerBilan(soutien3,bilanIntervenant)
+                    service.redigerBilan(soutien3, bilanIntervenant)
                     ? "\u001b[32m" + "Bilan de l'intervenant fait pour le soutien3"
-                    : "\u001b[31m" +"Le bilan de l'intervenant ne peut être faite pour le soutien3 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien3 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
-                    service.faireAutoEvaluationEleve(soutien4,5)
+                    service.faireAutoEvaluationEleve(soutien4, 5)
                     ? "\u001b[32m" + "Autoévaluation de l'élève faite pour le soutien4"
-                    : "\u001b[31m" +"L'autoévaluation de l'élève ne peut être faite pour le soutien4 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "L'autoévaluation de l'élève ne peut être faite pour le soutien4 (peut-être qu'il n'existe pas)"
             );
             System.out.println(
-                    service.redigerBilan(soutien4,bilanIntervenant)
+                    service.redigerBilan(soutien4, bilanIntervenant)
                     ? "\u001b[32m" + "Bilan de l'intervenant fait pour le soutien4"
-                    : "\u001b[31m" +"Le bilan de l'intervenant ne peut être faite pour le soutien4 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien4 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
-                    service.faireAutoEvaluationEleve(soutien5,1)
+                    service.faireAutoEvaluationEleve(soutien5, 1)
                     ? "\u001b[32m" + "Autoévaluation de l'élève faite pour le soutien5"
-                    : "\u001b[31m" +"L'autoévaluation de l'élève ne peut être faite pour le soutien5 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "L'autoévaluation de l'élève ne peut être faite pour le soutien5 (peut-être qu'il n'existe pas)"
             );
             System.out.println(
-                    service.redigerBilan(soutien5,bilanIntervenant)
+                    service.redigerBilan(soutien5, bilanIntervenant)
                     ? "\u001b[32m" + "Bilan de l'intervenant fait pour le soutien5"
-                    : "\u001b[31m" +"Le bilan de l'intervenant ne peut être faite pour le soutien5 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien5 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println("\u001b[31m" + "======================");
             System.out.println("\u001b[31m" + "=====TABLEAU DE BORD INTERVENANT=====");
             System.out.println("\u001b[31m" + "Nombre total d'interventions : " + service.statNbTotalIntervention());
@@ -275,45 +272,98 @@ public class Main {
             System.out.println("\u001b[31m" + "IPS moyen des établissement : " + service.statIpsMoyenSoutien());
             System.out.println("\u001b[31m" + "Quantite d'intervention par coordonnées : " + service.statQuantiteSoutienParCoordonnees());
             System.out.println("\u001b[31m" + "======================");
-            
+
             System.out.println("\u001b[31m" + "======================");
-            
-            
+
             System.out.println("\u001b[33m" + "=====TABLEAU DE BORD ELEVE=====");
-            System.out.println("\u001b[33m" +"Historique eleve1 : " +service.trouverHistoriqueEleve(eleve1));
-            System.out.println("\u001b[33m" +"Historique eleve2 : " +service.trouverHistoriqueEleve(eleve2));
-            System.out.println("\u001b[33m" +"Historique eleve3 : " +service.trouverHistoriqueEleve(eleve3));
-            System.out.println("\u001b[33m" +"Historique eleve4 : " +service.trouverHistoriqueEleve(eleve4));
-            System.out.println("\u001b[33m" +"Historique eleve5 : " +service.trouverHistoriqueEleve(eleve5));
-            
+
+            List<Soutien> historique1 = service.trouverHistoriqueEleve(eleve1);
+            StringBuilder sb1 = new StringBuilder();
+            for (Soutien soutien : historique1) {
+                sb1.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
+                        soutien.getDate(),
+                        soutien.getIntervenant().getPrenom(),
+                        soutien.getIntervenant().getNom(),
+                        soutien.getMatiere().getNom(),
+                        soutien.getBilanIntervenant()));
+            }
+
+            List<Soutien> historique2 = service.trouverHistoriqueEleve(eleve2);
+            StringBuilder sb2 = new StringBuilder();
+            for (Soutien soutien : historique2) {
+                sb2.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
+                        soutien.getDate(),
+                        soutien.getIntervenant().getPrenom(),
+                        soutien.getIntervenant().getNom(),
+                        soutien.getMatiere().getNom(),
+                        soutien.getBilanIntervenant()));
+            }
+
+            List<Soutien> historique3 = service.trouverHistoriqueEleve(eleve3);
+            StringBuilder sb3 = new StringBuilder();
+            for (Soutien soutien : historique3) {
+                sb3.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
+                        soutien.getDate(),
+                        soutien.getIntervenant().getPrenom(),
+                        soutien.getIntervenant().getNom(),
+                        soutien.getMatiere().getNom(),
+                        soutien.getBilanIntervenant()));
+            }
+
+            List<Soutien> historique4 = service.trouverHistoriqueEleve(eleve4);
+            StringBuilder sb4 = new StringBuilder();
+            for (Soutien soutien : historique4) {
+                sb4.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
+                        soutien.getDate(),
+                        soutien.getIntervenant().getPrenom(),
+                        soutien.getIntervenant().getNom(),
+                        soutien.getMatiere().getNom(),
+                        soutien.getBilanIntervenant()));
+            }
+
+            List<Soutien> historique5 = service.trouverHistoriqueEleve(eleve5);
+            StringBuilder sb5 = new StringBuilder();
+            for (Soutien soutien : historique4) {
+                sb5.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
+                        soutien.getDate(),
+                        soutien.getIntervenant().getPrenom(),
+                        soutien.getIntervenant().getNom(),
+                        soutien.getMatiere().getNom(),
+                        soutien.getBilanIntervenant()));
+            }
+            System.out.println("\u001b[33m" + "Historique eleve1 : " + sb1);
+            System.out.println("\u001b[33m" + "Historique eleve2 : " + sb2);
+            System.out.println("\u001b[33m" + "Historique eleve3 : " + sb3);
+            System.out.println("\u001b[33m" + "Historique eleve4 : " + sb4);
+            System.out.println("\u001b[33m" + "Historique eleve5 : " + sb5);
+
             //Ajout d'un soutien pour l'élève3 avec creerSoutien
-            
-            Soutien soutien6 = service.creerSoutien(eleve3, listeMatieres.get(2),descriptif);
-            
+            Soutien soutien6 = service.creerSoutien(eleve3, listeMatieres.get(2), descriptif);
+
             System.out.println(
                     service.lancerVisio(soutien6)
                     ? "\u001b[32m" + "Lancement de la visio pour le soutien6"
-                    : "\u001b[31m" +"La visio ne peut être lancée pour le soutien6 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien6 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
                     service.terminerVisio(soutien6)
                     ? "\u001b[32m" + "Fin de la visio pour le soutien6"
-                    : "\u001b[31m" +"La visio ne peut être arrêtée pour le soutien6 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien6 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
-                    service.faireAutoEvaluationEleve(soutien6,4)
+                    service.faireAutoEvaluationEleve(soutien6, 4)
                     ? "\u001b[32m" + "Autoévaluation de l'élève faite pour le soutien6"
-                    : "\u001b[31m" +"L'autoévaluation de l'élève ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "L'autoévaluation de l'élève ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println(
-                    service.redigerBilan(soutien6,bilanIntervenant)
+                    service.redigerBilan(soutien6, bilanIntervenant)
                     ? "\u001b[32m" + "Bilan de l'intervenant fait pour le soutien5"
-                    : "\u001b[31m" +"Le bilan de l'intervenant ne peut être faite pour le soutien5 (peut-être qu'il n'existe pas)"
+                    : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien5 (peut-être qu'il n'existe pas)"
             );
-            
+
             System.out.println("\u001b[31m" + "======================");
             System.out.println("\u001b[31m" + "=====TABLEAU DE BORD INTERVENANT=====");
             System.out.println("\u001b[31m" + "Nombre total d'interventions : " + service.statNbTotalIntervention());
@@ -325,18 +375,35 @@ public class Main {
             System.out.println("\u001b[31m" + "IPS moyen des établissement : " + service.statIpsMoyenSoutien());
             System.out.println("\u001b[31m" + "Quantite d'intervention par coordonnées : " + service.statQuantiteSoutienParCoordonnees());
             System.out.println("\u001b[31m" + "======================");
-            
-            System.out.println("\u001b[31m" + "======================");
-            
-            
-            System.out.println("\u001b[33m" + "=====Historique ELEVE=====");
-            System.out.println("\u001b[33m" +"Historique eleve3 : " +service.trouverHistoriqueEleve(eleve3));
-            
-            System.out.println("\u001b[35m" + "=====Historique INTERVENANT=====");
-            System.out.println("\u001b[35m" +"Historique intervenant : " +service.trouverHistoriqueIntervenant(Long.valueOf(1)));
-            
-            
 
+            System.out.println("\u001b[31m" + "======================");
+
+            System.out.println("\u001b[33m" + "=====Historique ELEVE=====");
+            StringBuilder sb6 = new StringBuilder();
+            historique3 = service.trouverHistoriqueEleve(eleve3);
+            for (Soutien soutien : historique3) {
+                sb6.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
+                        soutien.getDate(),
+                        soutien.getIntervenant().getPrenom(),
+                        soutien.getIntervenant().getNom(),
+                        soutien.getMatiere().getNom(),
+                        soutien.getBilanIntervenant()));
+            }
+            System.out.println("\u001b[33m" + "Historique eleve3 : " + sb6);
+
+            System.out.println("\u001b[35m" + "=====Historique INTERVENANT=====");
+            
+            StringBuilder sb = new StringBuilder();
+            List<Soutien> historique = service.trouverHistoriqueIntervenant(Long.valueOf(1));
+            for (Soutien soutien : historique) {
+            sb.append(String.format("Date: %s, Élève: %s %s, Matière: %s, Note de l'élève: %s ; ",
+                    soutien.getDate(),
+                    soutien.getEleve().getPrenom(),
+                    soutien.getEleve().getNom(),
+                    soutien.getMatiere().getNom(),
+                    soutien.getAutoevaluationEleve()));
+            }
+            System.out.println("\u001b[35m" + "Historique intervenant : " + sb);
         } catch (ParseException e) {
             e.printStackTrace();
         }
