@@ -127,7 +127,9 @@ public class Soutien {
 
     @Override
     public String toString() {
-        return "Soutien{" + "descriptif=" + descriptif + ", matiere=" + matiere + ", eleve=" + eleve + ", classe=" + eleve.getClasse() + ", etablissement=" + eleve.getEtablissement().getNomEtablissement() + '}';
+        return "Soutien{" + "Date : " + date + ", Intervenant=" + intervenant.getPrenom() + " "
+                + intervenant.getNom() + ", Matiere : " + matiere.getNom() + ", Bilan : "
+                + bilanIntervenant + '}';
     }
 
 }
