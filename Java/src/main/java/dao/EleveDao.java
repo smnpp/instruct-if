@@ -19,7 +19,6 @@ public class EleveDao {
         em.persist(eleve);
     }
 
-    //On pourra ajouter ici d'autres méthodes pour gérer les eleves (find, update, delete...)
     public static Eleve getParMail(String mail) {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Eleve> query = em.createQuery("SELECT c FROM Eleve c WHERE c.mail = :mail", Eleve.class);

@@ -24,7 +24,6 @@ public class SoutienDao {
         em.persist(soutien);
     }
 
-    //On pourra ajouter ici d'autres méthodes pour gérer les soutiens (find, update, delete...)
     public static Soutien trouverParId(Long id) {
         return JpaUtil.obtenirContextePersistance().find(Soutien.class, id);
     }
@@ -137,8 +136,8 @@ public class SoutienDao {
         List<List<Object>> resultats = new ArrayList<>();
         for (Object[] row : resultList) {
             List<Object> coordonneesEtNombre = new ArrayList<>();
-            coordonneesEtNombre.add(Double.valueOf(row[0].toString())); // Convert to Double for longitude
-            coordonneesEtNombre.add(Double.valueOf(row[1].toString())); // Convert to Double for latitude
+            coordonneesEtNombre.add(Double.valueOf(row[0].toString())); 
+            coordonneesEtNombre.add(Double.valueOf(row[1].toString()));
             coordonneesEtNombre.add(((Long) row[2]).intValue()); // Quantité de soutien, already Integer
             resultats.add(coordonneesEtNombre);
         }

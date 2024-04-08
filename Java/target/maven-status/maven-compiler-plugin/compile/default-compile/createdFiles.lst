@@ -1,5 +1,4 @@
 metier\modele\Soutien.class
-vue\MainBis.class
 metier\modele\Intervenant_.class
 dao\EleveDao.class
 metier\modele\Matiere.class

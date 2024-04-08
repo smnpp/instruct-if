@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package vue;
 
 import metier.service.Service;
@@ -11,10 +6,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
- * @author selghissas
+ * @author sperret
  */
 import metier.modele.Eleve;
 import metier.modele.Matiere;
@@ -22,10 +20,159 @@ import metier.modele.Soutien;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws InterruptedException {
+        Scanner scanner = new Scanner(System.in);
+        boolean run = true;
+        int choix;
 
-        JpaUtil.creerFabriquePersistance();
+        while (run) {
+            JpaUtil.creerFabriquePersistance();
+            System.out.println("Choisissez un scénario :");
+            System.out.println("1. Scénario simple de demande de soutien");
+            System.out.println("2. Scénario de plusieurs demandes de soutien");
+            System.out.println("3. Scénario de plusieurs demandes de soutien avec echec d'affiliation d'intervenant");
+            System.out.println("0. Quitter");
 
+            System.out.print("Votre choix : ");
+            choix = scanner.nextInt();
+
+            switch (choix) {
+                case 1:
+                    scenarioSimple();
+                    break;
+
+                case 2:
+                    scenarioComplexe();
+                    break;
+
+                case 3:
+                    scenarioConflit1();
+                    break;
+                case 0:
+                    run = false;
+                    break;
+                default:
+                    System.out.println("Choix incorrect");
+            }
+
+            JpaUtil.fermerFabriquePersistance();
+
+        }
+        scanner.close();
+    }
+
+    public static void scenarioSimple() throws InterruptedException {
+        Service service = new Service();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Scanner scanner = new Scanner(System.in);
+        try {
+            //initialisation des intervenant et des matieres.
+            service.initialisation();
+            //Inscription d'élèves
+            Date date1 = sdf.parse("27/03/2011");
+            Eleve eleve1 = new Eleve("Pascal", "Alice", "alice.pascal@free.fr", "123456", date1, 5);
+            service.inscrireEleve(eleve1, "0691664J");
+
+            Date date2 = sdf.parse("27/03/2008");
+            Eleve eleve2 = new Eleve("Jean", "François", "jeanfrancois@free.fr", "987654", date2, 2);
+            service.inscrireEleve(eleve2, "0691664J");
+
+            Date date3 = sdf.parse("28/03/2010");
+            Eleve eleve3 = new Eleve("Paul", "Paul", "ppaul@free.fr", "123456", date3, 3);
+            service.inscrireEleve(eleve3, "0691478G");
+
+            Date date4 = sdf.parse("28/03/2010");
+            Eleve eleve4 = new Eleve("Michel", "Arthur", "marthur@free.fr", "123456", date4, 3);
+            service.inscrireEleve(eleve4, "0691478G");
+
+            Date date5 = sdf.parse("28/03/2010");
+            Eleve eleve5 = new Eleve("Ninon", "Mathilde", "nmathilde@free.fr", "123456", date5, 0);
+            service.inscrireEleve(eleve5, "0691478G");
+
+            //Authentification d'élèves
+            Eleve eleveLogIn = service.authentifierEleveMail("alice.pascal@free.fr", "123456");
+            if (eleveLogIn != null) {
+                System.out.println("\u001b[34m" + "Authentification réussie"
+                        + ". Accès a la page d'accueil (Demander un Soutien).");
+            } else {
+                System.out.println("\u001b[34m" + "Erreur d'authentification");
+            }
+
+            Soutien soutien1 = service.demanderSoutien(eleveLogIn, service.consulterListeMatieres().get(1), "Je n'ai pas compris le cours");
+
+            System.out.print("numéro de téléphone: ");
+            String telephone = scanner.nextLine();
+            if (service.authentifierIntervenantTelephone(telephone, "mdp") != null) {
+                System.out.println("\u001b[34m" + "Authentification réussie");
+            } else {
+                System.out.println("\u001b[34m" + "Erreur d'authentification");
+            }
+
+            System.out.println(
+                    service.lancerVisio(soutien1)
+                    ? "\u001b[32m" + "Lancement de la visio pour le soutien1"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+            Thread.sleep(10000);
+
+            //Fin des visios pour les soutiens existant
+            System.out.println(
+                    service.terminerVisio(soutien1)
+                    ? "\u001b[32m" + "Fin de la visio pour le soutien1"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+
+            //Rédaction des Autoévaluations Elèves et Bilans Intervenants
+            String bilanIntervenant = "Bonne séance";
+
+            System.out.println(
+                    service.faireAutoEvaluationEleve(soutien1, 4)
+                    ? "\u001b[32m" + "Autoévaluation de l'élève faite pour le soutien1"
+                    : "\u001b[31m" + "L'autoévaluation de l'élève ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+
+            System.out.println(
+                    service.redigerBilan(soutien1, bilanIntervenant)
+                    ? "\u001b[32m" + "Bilan de l'intervenant fait pour le soutien1"
+                    : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+
+            System.out.println("\u001b[31m" + "======================");
+            System.out.println("\u001b[31m" + "=====TABLEAU DE BORD INTERVENANT=====");
+            System.out.println("\u001b[31m" + "Nombre total d'interventions : " + service.statNbTotalIntervention());
+            System.out.println("\u001b[31m" + "Duree moyenne d'une intervention : " + service.statDureeMoyenneIntervention());
+            System.out.println("\u001b[31m" + "Nombre d'élèves inscrits : " + service.statNbEleveInscrit());
+            System.out.println("\u001b[31m" + "Nombre d'intervenants actifs : " + service.statIntervenantActif());
+            System.out.println("\u001b[31m" + "Satisfaction moyenne des élèves : " + service.statSatisfactionEleve() + "/5");
+            System.out.println("\u001b[31m" + "Intervenant du mois : " + service.statIntervenantMois());
+            System.out.println("\u001b[31m" + "IPS moyen des établissement : " + service.statIpsMoyenSoutien());
+            System.out.println("\u001b[31m" + "Quantite d'intervention par coordonnées : " + service.statQuantiteSoutienParCoordonnees());
+            System.out.println("\u001b[31m" + "======================");
+
+            System.out.println("\u001b[31m" + "======================");
+
+            System.out.println("\u001b[33m" + "=====HISTORIQUE ELEVE=====");
+
+            List<Soutien> historique1 = service.trouverHistoriqueEleve(eleve1);
+            System.out.println("\u001b[33m" + "Historique eleve1 : " + historique1);
+            StringBuilder sb1 = new StringBuilder();
+            for (Soutien soutien : historique1) {
+                sb1.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
+                        soutien.getDate(),
+                        soutien.getIntervenant().getPrenom(),
+                        soutien.getIntervenant().getNom(),
+                        soutien.getMatiere().getNom(),
+                        soutien.getBilanIntervenant()));
+            }
+
+            System.out.println("\u001b[33m" + "Historique eleve1 : " + sb1);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void scenarioComplexe() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Service service = new Service();
 
@@ -42,15 +189,15 @@ public class Main {
             service.inscrireEleve(eleve2, "0691664J");
 
             Date date3 = sdf.parse("28/03/2010");
-            Eleve eleve3 = new Eleve("Paul", "Paul", "ppaul@free.fr", "123456", date3, 4);
+            Eleve eleve3 = new Eleve("Paul", "Paul", "ppaul@free.fr", "123456", date3, 3);
             service.inscrireEleve(eleve3, "0691478G");
 
             Date date4 = sdf.parse("28/03/2010");
-            Eleve eleve4 = new Eleve("Michel", "Arthur", "marthur@free.fr", "123456", date4, 4);
+            Eleve eleve4 = new Eleve("Michel", "Arthur", "marthur@free.fr", "123456", date4, 3);
             service.inscrireEleve(eleve4, "0691478G");
 
             Date date5 = sdf.parse("28/03/2010");
-            Eleve eleve5 = new Eleve("Ninon", "Mathilde", "nmathilde@free.fr", "123456", date3, 0);
+            Eleve eleve5 = new Eleve("Ninon", "Mathilde", "nmathilde@free.fr", "123456", date5, 0);
             service.inscrireEleve(eleve5, "0691478G");
 
             //Authentification d'élèves
@@ -76,25 +223,25 @@ public class Main {
             }
 
             //Authentification intervenant
-            if (service.authentifierIntervenantTelephone("0655447788", "123456") != null) {
+            if (service.authentifierIntervenantTelephone("0655447788", "mdp") != null) {
                 System.out.println("\u001b[34m" + "Authentification réussie");
             } else {
                 System.out.println("\u001b[34m" + "Erreur d'authentification");
             }
 
-            if (service.authentifierIntervenantTelephone("0633221144", "123456") != null) {
+            if (service.authentifierIntervenantTelephone("0633221144", "mdp") != null) {
                 System.out.println("\u001b[34m" + "Authentification réussie");
             } else {
                 System.out.println("\u001b[34m" + "Erreur d'authentification");
             }
 
-            if (service.authentifierIntervenantTelephone("0788559944", "123456") != null) {
+            if (service.authentifierIntervenantTelephone("0788559944", "mdp") != null) {
                 System.out.println("\u001b[34m" + "Authentification réussie");
             } else {
                 System.out.println("\u001b[34m" + "Erreur d'authentification");
             }
 
-            if (service.authentifierIntervenantTelephone("0722447744", "123456") != null) {
+            if (service.authentifierIntervenantTelephone("0722447744", "mdp") != null) {
                 System.out.println("\u001b[34m" + "Authentification réussie");
             } else {
                 System.out.println("\u001b[34m" + "Erreur d'authentification");
@@ -111,20 +258,10 @@ public class Main {
             //Ce service permet de gérer la concurrence
             String descriptif = "J'ai besoin d'aide pour réviser avant mon DS ";
 
-            service.demanderSoutien(eleve1, listeMatieres.get(1), descriptif);
-            service.demanderSoutien(eleve2, listeMatieres.get(2), descriptif);
-            service.demanderSoutien(eleve3, listeMatieres.get(3), descriptif);
-            service.demanderSoutien(eleve4, listeMatieres.get(4), descriptif);
-            service.demanderSoutien(eleve5, listeMatieres.get(5), descriptif);
-
-            List<Soutien> soutiens;
-            soutiens = service.creerSoutiens();
-
-            Soutien soutien1 = service.obtenirSoutienEnAttenteParEleveId(eleve1.getId());
-            Soutien soutien2 = service.obtenirSoutienEnAttenteParEleveId(eleve2.getId());
-            Soutien soutien3 = service.obtenirSoutienEnAttenteParEleveId(eleve3.getId());
-            Soutien soutien4 = service.obtenirSoutienEnAttenteParEleveId(eleve4.getId());
-            Soutien soutien5 = service.obtenirSoutienEnAttenteParEleveId(eleve5.getId());
+            Soutien soutien1 = service.demanderSoutien(eleve1, listeMatieres.get(1), descriptif);
+            Soutien soutien2 = service.demanderSoutien(eleve2, listeMatieres.get(2), descriptif);
+            Soutien soutien3 = service.demanderSoutien(eleve3, listeMatieres.get(3), descriptif);
+            Soutien soutien4 = service.demanderSoutien(eleve4, listeMatieres.get(4), descriptif);
 
             //Remarque : Deux possibilités pour persister les soutiens en fonction de la vision qu'on veut adopter 
             //Possibilité 1 : Plusieurs élèves peuvent demander un soutien en même temps
@@ -165,12 +302,6 @@ public class Main {
                     : "\u001b[31m" + "La visio ne peut être lancée pour le soutien4 (peut-être qu'il n'existe pas)"
             );
 
-            System.out.println(
-                    service.lancerVisio(soutien5)
-                    ? "\u001b[32m" + "Lancement de la visio pour le soutien5"
-                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien5 (peut-être qu'il n'existe pas)"
-            );
-
             //Fin des visios pour les soutiens existant
             System.out.println(
                     service.terminerVisio(soutien1)
@@ -194,12 +325,6 @@ public class Main {
                     service.terminerVisio(soutien4)
                     ? "\u001b[32m" + "Fin de la visio pour le soutien4"
                     : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien4 (peut-être qu'il n'existe pas)"
-            );
-
-            System.out.println(
-                    service.terminerVisio(soutien5)
-                    ? "\u001b[32m" + "Fin de la visio pour le soutien5"
-                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien5 (peut-être qu'il n'existe pas)"
             );
 
             //Rédaction des Autoévaluations Elèves et Bilans Intervenants
@@ -250,17 +375,6 @@ public class Main {
                     : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien4 (peut-être qu'il n'existe pas)"
             );
 
-            System.out.println(
-                    service.faireAutoEvaluationEleve(soutien5, 1)
-                    ? "\u001b[32m" + "Autoévaluation de l'élève faite pour le soutien5"
-                    : "\u001b[31m" + "L'autoévaluation de l'élève ne peut être faite pour le soutien5 (peut-être qu'il n'existe pas)"
-            );
-            System.out.println(
-                    service.redigerBilan(soutien5, bilanIntervenant)
-                    ? "\u001b[32m" + "Bilan de l'intervenant fait pour le soutien5"
-                    : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien5 (peut-être qu'il n'existe pas)"
-            );
-
             System.out.println("\u001b[31m" + "======================");
             System.out.println("\u001b[31m" + "=====TABLEAU DE BORD INTERVENANT=====");
             System.out.println("\u001b[31m" + "Nombre total d'interventions : " + service.statNbTotalIntervention());
@@ -278,6 +392,7 @@ public class Main {
             System.out.println("\u001b[33m" + "=====TABLEAU DE BORD ELEVE=====");
 
             List<Soutien> historique1 = service.trouverHistoriqueEleve(eleve1);
+            System.out.println("\u001b[33m" + "Historique eleve1 : " + historique1);
             StringBuilder sb1 = new StringBuilder();
             for (Soutien soutien : historique1) {
                 sb1.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
@@ -289,6 +404,7 @@ public class Main {
             }
 
             List<Soutien> historique2 = service.trouverHistoriqueEleve(eleve2);
+            System.out.println("\u001b[33m" + "Historique eleve1 : " + historique2);
             StringBuilder sb2 = new StringBuilder();
             for (Soutien soutien : historique2) {
                 sb2.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
@@ -300,6 +416,7 @@ public class Main {
             }
 
             List<Soutien> historique3 = service.trouverHistoriqueEleve(eleve3);
+            System.out.println("\u001b[33m" + "Historique eleve1 : " + historique3);
             StringBuilder sb3 = new StringBuilder();
             for (Soutien soutien : historique3) {
                 sb3.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
@@ -311,6 +428,7 @@ public class Main {
             }
 
             List<Soutien> historique4 = service.trouverHistoriqueEleve(eleve4);
+            System.out.println("\u001b[33m" + "Historique eleve1 : " + historique4);
             StringBuilder sb4 = new StringBuilder();
             for (Soutien soutien : historique4) {
                 sb4.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
@@ -321,24 +439,13 @@ public class Main {
                         soutien.getBilanIntervenant()));
             }
 
-            List<Soutien> historique5 = service.trouverHistoriqueEleve(eleve5);
-            StringBuilder sb5 = new StringBuilder();
-            for (Soutien soutien : historique4) {
-                sb5.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
-                        soutien.getDate(),
-                        soutien.getIntervenant().getPrenom(),
-                        soutien.getIntervenant().getNom(),
-                        soutien.getMatiere().getNom(),
-                        soutien.getBilanIntervenant()));
-            }
             System.out.println("\u001b[33m" + "Historique eleve1 : " + sb1);
             System.out.println("\u001b[33m" + "Historique eleve2 : " + sb2);
             System.out.println("\u001b[33m" + "Historique eleve3 : " + sb3);
             System.out.println("\u001b[33m" + "Historique eleve4 : " + sb4);
-            System.out.println("\u001b[33m" + "Historique eleve5 : " + sb5);
 
             //Ajout d'un soutien pour l'élève3 avec creerSoutien
-            Soutien soutien6 = service.creerSoutien(eleve3, listeMatieres.get(2), descriptif);
+            Soutien soutien6 = service.demanderSoutien(eleve3, listeMatieres.get(2), descriptif);
 
             System.out.println(
                     service.lancerVisio(soutien6)
@@ -379,35 +486,133 @@ public class Main {
             System.out.println("\u001b[31m" + "======================");
 
             System.out.println("\u001b[33m" + "=====Historique ELEVE=====");
-            StringBuilder sb6 = new StringBuilder();
-            historique3 = service.trouverHistoriqueEleve(eleve3);
-            for (Soutien soutien : historique3) {
-                sb6.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
+
+            List<Soutien> historique5 = service.trouverHistoriqueEleve(eleve1);
+            System.out.println("\u001b[33m" + "Historique eleve3 : " + historique5);
+            StringBuilder sb5 = new StringBuilder();
+            for (Soutien soutien : historique1) {
+                sb5.append(String.format("Date: %s, Intervenant: %s %s, Matière: %s, Bilan: %s ; ",
                         soutien.getDate(),
                         soutien.getIntervenant().getPrenom(),
                         soutien.getIntervenant().getNom(),
                         soutien.getMatiere().getNom(),
                         soutien.getBilanIntervenant()));
             }
-            System.out.println("\u001b[33m" + "Historique eleve3 : " + sb6);
-
-            System.out.println("\u001b[35m" + "=====Historique INTERVENANT=====");
-            
-            StringBuilder sb = new StringBuilder();
-            List<Soutien> historique = service.trouverHistoriqueIntervenant(Long.valueOf(1));
-            for (Soutien soutien : historique) {
-            sb.append(String.format("Date: %s, Élève: %s %s, Matière: %s, Note de l'élève: %s ; ",
-                    soutien.getDate(),
-                    soutien.getEleve().getPrenom(),
-                    soutien.getEleve().getNom(),
-                    soutien.getMatiere().getNom(),
-                    soutien.getAutoevaluationEleve()));
-            }
-            System.out.println("\u001b[35m" + "Historique intervenant : " + sb);
+            System.out.println("\u001b[35m" + "Historique intervenant : " + sb5);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
 
-        JpaUtil.fermerFabriquePersistance();
+    public static void scenarioConflit1() throws InterruptedException {
+        Service service = new Service();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Scanner scanner = new Scanner(System.in);
+        try {
+            //initialisation des intervenant et des matieres.
+            service.initialisation();
+            //Inscription d'élèves
+            Date date1 = sdf.parse("27/03/2011");
+            Eleve eleve1 = new Eleve("Pascal", "Alice", "alice.pascal@free.fr", "123456", date1, 6);
+            service.inscrireEleve(eleve1, "0691664J");
+
+            Date date2 = sdf.parse("27/03/2008");
+            Eleve eleve2 = new Eleve("Jean", "François", "jeanfrancois@free.fr", "987654", date2, 0);
+            service.inscrireEleve(eleve2, "0691664J");
+
+            Date date3 = sdf.parse("28/03/2010");
+            Eleve eleve3 = new Eleve("Paul", "Paul", "ppaul@free.fr", "123456", date3, 0);
+            service.inscrireEleve(eleve3, "0691478G");
+
+            Date date4 = sdf.parse("28/03/2010");
+            Eleve eleve4 = new Eleve("Michel", "Arthur", "marthur@free.fr", "123456", date4, 4);
+            service.inscrireEleve(eleve4, "0691478G");
+
+            Date date5 = sdf.parse("28/03/2010");
+            Eleve eleve5 = new Eleve("Ninon", "Mathilde", "nmathilde@free.fr", "123456", date5, 0);
+            service.inscrireEleve(eleve5, "0691478G");
+
+            //Authentification d'élèves
+            Eleve eleveLogIn1 = service.authentifierEleveMail("alice.pascal@free.fr", "123456");
+            if (eleveLogIn1 != null) {
+                System.out.println("\u001b[34m" + "Authentification réussie"
+                        + ". Accès a la page d'accueil (Demander un Soutien).");
+            } else {
+                System.out.println("\u001b[34m" + "Erreur d'authentification");
+            }
+
+            Eleve eleveLogIn2 = service.authentifierEleveMail("jeanfrancois@free.fr", "987654");
+            if (eleveLogIn2 != null) {
+                System.out.println("\u001b[34m" + "Authentification réussie"
+                        + ". Accès a la page d'accueil (Demander un Soutien).");
+            } else {
+                System.out.println("\u001b[34m" + "Erreur d'authentification");
+            }
+
+            Eleve eleveLogIn3 = service.authentifierEleveMail("ppaul@free.fr", "123456");
+            if (eleveLogIn3 != null) {
+                System.out.println("\u001b[34m" + "Authentification réussie"
+                        + ". Accès a la page d'accueil (Demander un Soutien).");
+            } else {
+                System.out.println("\u001b[34m" + "Erreur d'authentification");
+            }
+
+            Soutien soutien1 = service.demanderSoutien(eleveLogIn1, service.consulterListeMatieres().get(1), "Je n'ai pas compris le cours");
+            Soutien soutien2 = service.demanderSoutien(eleveLogIn2, service.consulterListeMatieres().get(4), "J'ai quelques difficultés");
+            Soutien soutien3 = service.demanderSoutien(eleveLogIn3, service.consulterListeMatieres().get(3), "Aidez moi !");
+
+            System.out.println(
+                    service.lancerVisio(soutien1)
+                    ? "\u001b[32m" + "Lancement de la visio pour le soutien1"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+            System.out.println(
+                    service.lancerVisio(soutien2)
+                    ? "\u001b[32m" + "Lancement de la visio pour le soutien2"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+            System.out.println(
+                    service.lancerVisio(soutien3)
+                    ? "\u001b[32m" + "Lancement de la visio pour le soutien3"
+                    : "\u001b[31m" + "La visio ne peut être lancée pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+            Thread.sleep(10000);
+
+            //Fin des visios pour les soutiens existant
+            System.out.println(
+                    service.terminerVisio(soutien1)
+                    ? "\u001b[32m" + "Fin de la visio pour le soutien2"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+
+            System.out.println(
+                    service.terminerVisio(soutien2)
+                    ? "\u001b[32m" + "Fin de la visio pour le soutien2"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+            System.out.println(
+                    service.terminerVisio(soutien2)
+                    ? "\u001b[32m" + "Fin de la visio pour le soutien2"
+                    : "\u001b[31m" + "La visio ne peut être arrêtée pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+
+            //Rédaction des Autoévaluations Elèves et Bilans Intervenants
+            String bilanIntervenant = "Bonne séance";
+
+            System.out.println(
+                    service.faireAutoEvaluationEleve(soutien1, 4)
+                    ? "\u001b[32m" + "Autoévaluation de l'élève faite pour le soutien1"
+                    : "\u001b[31m" + "L'autoévaluation de l'élève ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+
+            System.out.println(
+                    service.redigerBilan(soutien1, bilanIntervenant)
+                    ? "\u001b[32m" + "Bilan de l'intervenant fait pour le soutien1"
+                    : "\u001b[31m" + "Le bilan de l'intervenant ne peut être faite pour le soutien1 (peut-être qu'il n'existe pas)"
+            );
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -19,7 +19,6 @@ public class IntervenantDao {
         em.persist(intervenant);
     }
 
-    //On pourra ajouter ici d'autres méthodes pour gérer les intervenants (find, update, delete...)
     public static Intervenant getParTelephone(String telephone) {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Intervenant> query = em.createQuery("SELECT c FROM Intervenant c WHERE c.telephone = :telephone", Intervenant.class);

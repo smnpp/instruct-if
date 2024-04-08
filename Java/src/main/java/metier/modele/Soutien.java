@@ -49,10 +49,6 @@ public class Soutien {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public EtatSoutien getEtat() {
         return etat;
     }

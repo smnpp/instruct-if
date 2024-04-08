@@ -123,7 +123,7 @@ public class Service {
         return success;
     }
 
-    public Eleve authentifierEleveMail(String mail, String motDePasse) { //Authentifier un eleve
+    public Eleve authentifierEleveMail(String mail, String motDePasse) {
         Eleve retour = null;
         JpaUtil.creerContextePersistance();
         Eleve eleve = eleveDao.getParMail(mail);
@@ -152,7 +152,7 @@ public class Service {
         }
     }
 
-    public Intervenant authentifierIntervenantTelephone(String telephone, String motDePasse) { //Authentifier un eleve
+    public Intervenant authentifierIntervenantTelephone(String telephone, String motDePasse) {
         Intervenant retour = null;
         JpaUtil.creerContextePersistance();
         Intervenant intervenant = intervenantDao.getParTelephone(telephone);
@@ -203,7 +203,7 @@ public class Service {
         return intervenantTrouve;
     }
 
-    public Soutien creerSoutien(Eleve eleve, Matiere matiere, String descriptif) throws Exception {
+    public Soutien demanderSoutien(Eleve eleve, Matiere matiere, String descriptif) {
         Soutien soutien = new Soutien();
         try {
             JpaUtil.creerContextePersistance();
@@ -212,107 +212,35 @@ public class Service {
             soutien.setDescriptif(descriptif);
             soutien.setMatiere(matiere);
             Intervenant intervenant = trouverIntervenantSoutien(eleve);
-
-            if (intervenant == null) {
-                // Si aucun intervenant disponible n'est trouvé, on envoie un email à l'élève.
-                Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Aucun intervenant disponible",
-                        "Bonjour " + eleve.getPrenom() + ",\n\nNous sommes désolés, mais aucun intervenant n'est disponible pour le moment pour du soutien en "
-                        + matiere.getNom() + ". Veuillez réessayer ultérieurement.\n\nCordialement,\nL'équipe INSTRUCT'IF");
-                throw new Exception("Aucun intervenant disponible pour le moment.");
-            }
-
             soutien.setIntervenant(intervenant);
             intervenant.setDisponibilite(false);
             intervenant.setNbIntervention(intervenant.getNbIntervention() + 1);
 
-            JpaUtil.ouvrirTransaction();
-            intervenantDao.update(intervenant);
-            soutienDao.create(soutien);
-            JpaUtil.validerTransaction();
+            if (intervenant != null) {
+                JpaUtil.ouvrirTransaction();
+                intervenantDao.update(intervenant);
+                soutienDao.create(soutien);
+                JpaUtil.validerTransaction();
+            
 
             Message.envoyerNotification(intervenant.getTelephone(),
-                    "Bonjour " + intervenant.getPrenom() + ", vous avez une nouvelle demande de soutien en "
-                    + matiere.getNom() + " de la part de " + eleve.getPrenom() + ", classe de " + eleve.getClasse() + "ème.");
-
+                    "Bonjour "
+                    + intervenant.getPrenom() + ", Merci de prendre en charge la demande de soutien en "
+                    + matiere.getNom() + " demandée par " + eleve.getPrenom() + " en classe de " + eleve.getClasse() + "ème");
+            }
+            else {
+                Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Annulation de demande de soutien",
+                    "Bonjour "
+                    + eleve.getPrenom() + " ta demande sur le réseau INSTRUCT'IF a malencontreusement échoué... "
+                    + "Merci de recommencer ultérieurement.");
+            }
         } catch (Exception e) {
+            e.printStackTrace();
             JpaUtil.annulerTransaction();
-            throw e; // Relancer l'exception pour indiquer un échec dans la création du soutien.
         } finally {
             JpaUtil.fermerContextePersistance();
         }
         return soutien;
-    }
-
-    public void demanderSoutien(Eleve eleve, Matiere matiere, String descriptif) {
-        demandesEnAttente.add(new Object[]{eleve, matiere, descriptif});
-    }
-
-    public List<Soutien> creerSoutiens() throws Exception {
-        List<Soutien> soutiensCrees = new ArrayList<>();
-        if (demandesEnAttente.isEmpty()) {
-            throw new Exception("Aucune demande en attente.");
-        }
-
-        JpaUtil.creerContextePersistance();
-
-        try {
-            JpaUtil.ouvrirTransaction();
-
-            // Trier la liste des demandes en attente par classe de l'élève (ascendant)
-            demandesEnAttente.sort((demande1, demande2)
-                    -> ((Eleve) demande1[0]).getClasse().compareTo(((Eleve) demande2[0]).getClasse()));
-
-            Long nombreIntervenantsDisponibles = intervenantDao.getNbIntervDisponibles();
-
-            for (Object[] demande : demandesEnAttente) {
-                Eleve eleve = (Eleve) demande[0];
-                Matiere matiere = (Matiere) demande[1];
-                String descriptif = (String) demande[2];
-
-                if (nombreIntervenantsDisponibles > 0) {
-                    Intervenant intervenant = trouverIntervenantSoutien(eleve);
-
-                    if (intervenant != null) {
-                        Soutien soutien = new Soutien();
-                        soutien.setEleve(eleve);
-                        soutien.setDescriptif(descriptif);
-                        soutien.setMatiere(matiere);
-                        soutien.setIntervenant(intervenant);
-
-                        intervenant.setDisponibilite(false);
-                        intervenant.setNbIntervention(intervenant.getNbIntervention() + 1);
-
-                        soutienDao.create(soutien);
-                        soutiensCrees.add(soutien);
-
-                        nombreIntervenantsDisponibles--;
-
-                        Message.envoyerNotification(intervenant.getTelephone(),
-                                "Bonjour " + intervenant.getPrenom() + ", vous avez une nouvelle demande de soutien en "
-                                + matiere.getNom() + " de la part de " + eleve.getPrenom() + ", classe de " + eleve.getClasse() + "ème.");
-                    } else {
-                        // Envoie un mail à l'élève pour informer de l'indisponibilité des intervenants
-                        Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Demande de soutien non aboutie",
-                                "Bonjour " + eleve.getPrenom() + ",\n\nMalheureusement, nous n'avons pas assez d'intervenants disponibles pour répondre à toutes les demandes actuellement. Veuillez réessayer ultérieurement.\n\nCordialement,\nL'équipe INSTRUCT'IF");
-                    }
-                } else {
-                    // Envoie un mail à l'élève pour informer de l'indisponibilité des intervenants
-                    Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Demande de soutien non aboutie",
-                            "Bonjour " + eleve.getPrenom() + ",\n\nMalheureusement, nous n'avons pas assez d'intervenants disponibles pour répondre à toutes les demandes actuellement. Veuillez réessayer ultérieurement.\n\nCordialement,\nL'équipe INSTRUCT'IF");
-                }
-            }
-
-            JpaUtil.validerTransaction();
-        } catch (Exception e) {
-            JpaUtil.annulerTransaction();
-            throw e;
-        } finally {
-            JpaUtil.fermerContextePersistance();
-        }
-
-        demandesEnAttente.clear(); // La file est maintenant vide après traitement
-
-        return soutiensCrees; // Retourne la liste des soutiens créés
     }
 
     public Soutien obtenirSoutienEnAttenteParEleveId(Long eleveId) throws Exception {
@@ -343,9 +271,9 @@ public class Service {
 
     public List<Soutien> trouverHistoriqueIntervenant(Long intervenantId) {
         JpaUtil.creerContextePersistance();
-        Intervenant intervenant = intervenantDao.getParId(intervenantId) ;
+        Intervenant intervenant = intervenantDao.getParId(intervenantId);
         List<Soutien> historique = soutienDao.getHistoriqueParIntervenant(intervenant);
-        return historique ;
+        return historique;
     }
 
     public Boolean lancerVisio(Soutien soutien) {

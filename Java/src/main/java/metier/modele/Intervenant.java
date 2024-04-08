@@ -40,6 +40,10 @@ public class Intervenant {
         this.nbIntervention = 0;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getNom() {
         return nom;
     }

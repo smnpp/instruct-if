@@ -54,10 +54,6 @@ public class Eleve implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     // Getter et Setter pour nom
     public String getNom() {
         return nom;

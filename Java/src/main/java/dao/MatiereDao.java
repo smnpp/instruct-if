@@ -19,7 +19,6 @@ public class MatiereDao {
         em.persist(matiere);
     }
 
-    //On pourra ajouter ici d'autres méthodes pour gérer les matieres (find, update, delete...)
     public static Matiere getParNom(String nom) {
         EntityManager em = JpaUtil.obtenirContextePersistance();
         TypedQuery<Matiere> query = em.createQuery("SELECT c FROM Matiere c WHERE c.nom = :nom", Matiere.class);
