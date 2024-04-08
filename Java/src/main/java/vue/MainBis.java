@@ -1,76 +1,102 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package vue;
 
-import java.util.Scanner;
-import util.Saisie;
 import metier.service.Service;
 import dao.JpaUtil;
-import java.text.ParseException;
+import util.Saisie;
+import metier.modele.Eleve;
+import metier.modele.Matiere;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import metier.modele.Eleve;
-import metier.modele.Matiere;
 
 /**
  *
- * @author sperret
+ * @author selghissas
  */
+import metier.modele.Eleve;
+import metier.modele.Matiere;
+import metier.modele.Soutien;
+
 public class MainBis {
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+
         JpaUtil.creerFabriquePersistance();
+        Service service = new Service();
+        service.initialisation(); // Initialise les données nécessaires
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Service service = new Service();
-        
-        int choix;
 
-        do {
-            // Affichage du menu
-            System.out.println("Menu :\n"
-                    + "\n"
-                    + "\t1: Se connecter\n"
-                    + "\t2: Créer un compte\n"
-                    + "\t3: Passer en mode intervenant\n"
-                    + "\t0: Quitter\n");
+        boolean continuer = true;
+        while (continuer) {
+            System.out.println("\u001b[34m" +"Choisissez un scénario à tester:");
+            System.out.println("A- Erreur d'inscription d'élève à cause des formats");
+            System.out.println("B- Erreur d'inscription d'élève car mauvais UAI");
+            System.out.println("C- Erreur de connexion d'élève (mauvais mdp)");
+            System.out.println("D- Erreur de connexion d'intervenant (mauvais mdp)");
+            System.out.println("E- Soumission d'une demande de soutien avec infos invalides");
+            System.out.println("F- Demande de soutien sans intervenant disponible");
+            System.out.println("G- Intervenants avec même note pour intervenant du mois");
+            System.out.println("H- Quitter");
 
-            System.out.print(" > ");
-            choix = scanner.nextInt();
-            scanner.nextLine();
-
+            String choix = Saisie.lireChaine("Votre choix: ").toUpperCase();
             switch (choix) {
-                case 0:
+                case "A":
+                    testerErreurInscriptionFormat(service);
                     break;
-
-                case 1:
-                    service.authentifierEleveMail(Saisie.lireChaine("Enter email : "), Saisie.lireChaine("Enter password : "));
+                case "B":
+                    testerErreurInscriptionUAI(service);
                     break;
-
-                case 2:
-                    // Code pour la recherche avancée
+                case "C":
+                    //testerErreurConnexionEleve(service);
                     break;
-
-                case 3:
-                    // Code pour ajouter un trajet au catalogue
+                case "D":
+                    //testerErreurConnexionIntervenant(service);
                     break;
-
-                case 4:
-                    // Code pour afficher le catalogue
+                case "E":
+                    //testerDemandeSoutienInfosInvalides(service);
                     break;
-
+                case "F":
+                    //testerDemandeSoutienSansIntervenant(service);
+                    break;
+                case "G":
+                    //testerIntervenantsMemeNote(service);
+                    break;
+                case "H":
+                    continuer = false;
+                    System.out.println("Au revoir !");
+                    break;
                 default:
-                    System.out.println("Choix incorrect");
+                    System.out.println("Choix non reconnu, veuillez réessayer.");
             }
-        } while (choix != 0);
+        }
 
-        scanner.close();
-
-        System.out.println("Au revoir");
+        JpaUtil.fermerFabriquePersistance();
     }
 
+    // Différents cas de test
+    //Simulation d'une inscription avec un format de date incorrect
+    private static void testerErreurInscriptionFormat(Service service) {
+        System.out.println("Scénario A - Erreur d'inscription d'élève à cause des formats");
+        try {
+            Eleve eleve = new Eleve("Test", "Format", "test.format@exemple.com", "mdpIncorrect", new SimpleDateFormat("dd/MM/yyyy").parse("32/13/2000"), 3);
+            boolean resultat = service.inscrireEleve(eleve, "0693030A");
+            System.out.println(resultat ? "Inscription réussie" : "Erreur d'inscription due au format");
+        } catch (Exception e) {
+            System.out.println("Erreur de format lors de l'inscription de l'élève.");
+        }
+
+    }
+
+    private static void testerErreurInscriptionUAI(Service service) {
+        System.out.println("Scénario B - Erreur d'inscription d'élève car mauvais UAI");
+        // Tentative d'inscription avec un UAI incorrect
+        try {
+            Eleve eleve = new Eleve("Erreur", "UAI", "erreur.uai@exemple.com", "mdp123", new SimpleDateFormat("dd/MM/yyyy").parse("15/09/2005"), 2);
+            boolean resultat = service.inscrireEleve(eleve, "UAIIncorrect");
+            System.out.println(resultat ? "Inscription réussie" : "Inscription échouée due à un UAI incorrect");
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'inscription due à un UAI incorrect.");
+        }
+    }
 }
