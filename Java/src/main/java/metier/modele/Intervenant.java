@@ -108,6 +108,7 @@ public class Intervenant {
         this.nbIntervention = nbIntervention;
     }
 
+
     @Override
     public String toString() {
         return "Intervenant{" + "id=" + id + ", nom=" + nom + ", prenom=" + prenom + ", telephone=" + telephone + ", motDePasse=" + motDePasse + ", niveauMin=" + niveauMin + ", niveauMax=" + niveauMax + ", disponibilite=" + disponibilite + '}';

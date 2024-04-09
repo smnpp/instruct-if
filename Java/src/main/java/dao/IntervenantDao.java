@@ -26,7 +26,7 @@ public class IntervenantDao {
         List<Intervenant> intervenants = query.getResultList();
         Intervenant result = null;
         if (!intervenants.isEmpty()) {
-            // on prend le tuple de la première ligne et cela marche car le mail est unique
+            // on prend le tuple de la première ligne et cela marche car le tel est unique
             result = intervenants.get(0);
         }
         return result;

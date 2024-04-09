@@ -56,7 +56,7 @@ public class SoutienDao {
         TypedQuery<Soutien> query = em.createQuery(
                 "SELECT s FROM Soutien s WHERE s.intervenant.id = :intervenantId AND s.etat = metier.modele.Soutien$EtatSoutien.EN_ATTENTE",
                 Soutien.class);
-        query.setParameter("intervenant", intervenantId);
+        query.setParameter("intervenantId", intervenantId);
         List<Soutien> resultats = query.getResultList();
         Soutien resultat = null ;
         if (!resultats.isEmpty()) {

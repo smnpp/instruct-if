@@ -1,6 +1,3 @@
-/*
- Le service métier va utiliser EleveDao pour persister les données et GeoNetApi pour obtenir les coordonnées GPS.
- */
 package metier.service;
 
 import com.google.maps.model.LatLng;
@@ -13,7 +10,6 @@ import dao.JpaUtil;
 import dao.MatiereDao;
 import dao.SoutienDao;
 import dao.IntervenantDao;
-import java.util.ArrayList;
 import metier.modele.Eleve;
 import metier.modele.Intervenant;
 import metier.modele.Etudiant;
@@ -26,9 +22,6 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,7 +35,6 @@ public class Service {
     public SoutienDao soutienDao = new SoutienDao();
     public MatiereDao matiereDao = new MatiereDao();
     public IntervenantDao intervenantDao = new IntervenantDao();
-    private List<Object[]> demandesEnAttente = new LinkedList<>();
 
     public Boolean inscrireEleve(Eleve eleve, String uai) { //Inscrire un élève
         boolean success = false;
@@ -212,27 +204,27 @@ public class Service {
             soutien.setDescriptif(descriptif);
             soutien.setMatiere(matiere);
             Intervenant intervenant = trouverIntervenantSoutien(eleve);
-            soutien.setIntervenant(intervenant);
-            intervenant.setDisponibilite(false);
-            intervenant.setNbIntervention(intervenant.getNbIntervention() + 1);
 
             if (intervenant != null) {
+                soutien.setIntervenant(intervenant);
+                intervenant.setDisponibilite(false);
+                intervenant.setNbIntervention(intervenant.getNbIntervention() + 1);
                 JpaUtil.ouvrirTransaction();
                 intervenantDao.update(intervenant);
                 soutienDao.create(soutien);
                 JpaUtil.validerTransaction();
-            
 
-            Message.envoyerNotification(intervenant.getTelephone(),
-                    "Bonjour "
-                    + intervenant.getPrenom() + ", Merci de prendre en charge la demande de soutien en "
-                    + matiere.getNom() + " demandée par " + eleve.getPrenom() + " en classe de " + eleve.getClasse() + "ème");
-            }
-            else {
+                Message.envoyerNotification(intervenant.getTelephone(),
+                        "Bonjour "
+                        + intervenant.getPrenom() + ", Merci de prendre en charge la demande de soutien en "
+                        + matiere.getNom() + " demandée par " + eleve.getPrenom() + " en classe de " + eleve.getClasse() + "ème");
+            } else {
+                JpaUtil.annulerTransaction();
                 Message.envoyerMail("contact@instruct.if", eleve.getMail(), "Annulation de demande de soutien",
-                    "Bonjour "
-                    + eleve.getPrenom() + " ta demande sur le réseau INSTRUCT'IF a malencontreusement échoué... "
-                    + "Merci de recommencer ultérieurement.");
+                        "Bonjour "
+                        + eleve.getPrenom() + " ta demande sur le réseau INSTRUCT'IF a malencontreusement échoué... "
+                        + "Merci de recommencer ultérieurement.");
+                soutien = null;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -302,6 +294,15 @@ public class Service {
             }
         }
         return success;
+    }
+
+    public Soutien refreshSoutien(Soutien soutien) {
+        JpaUtil.creerContextePersistance();
+        try {
+            return soutienDao.trouverParId(soutien.getId());
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
     }
 
     public Boolean terminerVisio(Soutien soutien) {
@@ -452,10 +453,10 @@ public class Service {
         AutreIntervenant intervenant2 = new AutreIntervenant("Zola", "Anna", "0633221144", "123456", 6, 0, "Retraite");
         inscrireIntervenant(intervenant2);
 
-        Enseignant intervenant3 = new Enseignant("Hugo", "Emile", "0788559944", "123456", 3, 3, "collège");
+        Enseignant intervenant3 = new Enseignant("Hugo", "Emile", "0788559944", "123456", 6, 0, "collège");
         inscrireIntervenant(intervenant3);
 
-        AutreIntervenant intervenant4 = new AutreIntervenant("Yourcenar", "Simone", "0722447744", "123456", 5, 1, "médecin");
+        AutreIntervenant intervenant4 = new AutreIntervenant("Yourcenar", "Simone", "0722447744", "123456", 6, 0, "médecin");
         inscrireIntervenant(intervenant4);
 
         //il n'est pas possible pour un élève de creer une nouvelle matiere (menu déroulant)
