@@ -22,7 +22,7 @@ INSTRUCT'IF is an innovative educational platform designed to facilitate homewor
 4. **Evaluation and Report:** After the session, the student evaluates the support and the instructor provides a report.
 
 ## License
-This project is licensed under the [MIT License](LICENSE). See the `LICENSE` file for more details.
+This project is licensed under the [MIT License](https://github.com/smnpp/instruct-if?tab=MIT-1-ov-file#readme). See the `LICENSE` file for more details.
 
 ## Authors
 - [Saad ElGhissassi](https://github.com/saadelg12)
