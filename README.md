@@ -25,5 +25,5 @@ INSTRUCT'IF is an innovative educational platform designed to facilitate homewor
 This project is licensed under the [MIT License](LICENSE). See the `LICENSE` file for more details.
 
 ## Authors
-- Saad ElGhissassi @saadelg12
+- [Saad ElGhissassi](https://github.com/saadelg12)
 - Simon Perret
